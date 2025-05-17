@@ -13,15 +13,17 @@ body {
     color: #fff;
 }
 
-canvas#galaxyCanvas {
+/* Canvas styling */
+canvas#galaxyCanvas { /* Be more specific for the canvas */
     display: block;
     width: 100vw;
     height: 100vh;
-    position: fixed;
+    position: fixed; /* Ensure it stays in background */
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: -1; /* Put it behind other content if needed */
 }
+
 
 /* Info text styling */
 #info {
@@ -29,30 +31,13 @@ canvas#galaxyCanvas {
     top: 20px;
     width: 100%;
     text-align: center;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
     padding: 10px;
     z-index: 100;
     pointer-events: none;
-    text-shadow: 0 0 10px rgba(0,0,0,0.7);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     animation: fadeIn 2s ease-in-out;
-}
-
-/* Label Styling */
-.galaxy-label {
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 5px;
-    font-size: 15px;
-    white-space: nowrap;
-    pointer-events: none;
-    position: absolute;
-    z-index: 300;
-    box-shadow: 0 0 6px #000, 0 0 2px #326fff;
-    border: 1px solid rgba(255,255,255,0.2);
-    text-shadow: 0 0 3px #000;
-    transition: opacity 0.2s;
 }
 
 /* Loading screen */
@@ -62,9 +47,9 @@ canvas#galaxyCanvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: #000; /* Solid black background */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack text and spinner vertically */
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -80,78 +65,106 @@ canvas#galaxyCanvas {
 .loading-spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid #333;
-    border-top: 3px solid #fff;
+    border: 3px solid #333; /* Darker border */
+    border-top: 3px solid #fff; /* White spinning part */
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 20px auto;
 }
 
-/* Controls panel */
+/* Controls panel (for basic HTML controls) */
 #controls {
     position: absolute;
-    top: 20px;
+    top: 20px; /* Adjusted to not overlap lil-gui if gui is on the right */
     left: 20px;
-    background-color: rgba(0,0,0,0.75);
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 15px;
     border-radius: 10px;
     color: #fff;
-    font-size: 15px;
-    max-width: 320px;
-    border: 1px solid rgba(255,255,255,0.1);
-    z-index: 101;
-    box-shadow: 0 0 10px #000;
+    font-size: 14px;
+    max-width: 300px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 101; /* Ensure it's above canvas, but potentially below other popups if any */
 }
 
-/* Info Panel */
-#infoPanel {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.78);
-    padding: 15px;
-    border-radius: 7px;
-    color: white;
-    width: 300px;
-    text-align: left;
-    z-index: 200;
-    box-shadow: 0 0 8px #000;
+.control-group {
+    margin-bottom: 15px;
 }
 
-/* Credits */
-#credits {
-    position: absolute;
-    bottom: 5px;
-    right: 10px;
-    color: rgba(255,255,255,0.48);
-    font-size: 12px;
-    text-align: right;
+.control-group h3 {
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 16px;
 }
+
+.control-item {
+    margin-bottom: 8px;
+}
+.control-item label {
+    display: block;
+    margin-bottom: 4px;
+}
+.control-item input[type="range"] {
+    width: 100%;
+}
+
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg);}
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-    #info { font-size: 14px; padding: 5px; }
-    #controls {
-        position: fixed; bottom: 0; top: auto; left: 0; right: 0;
-        width: 100%; max-width: none; border-radius: 0; padding: 10px;
+    #info {
+        font-size: 14px;
+        padding: 5px;
     }
-    #infoPanel { width: 98vw; font-size: 13px; }
+
+    #controls { /* Example: Stack HTML controls at bottom on small screens if lil-gui is not used or also adapted */
+        position: fixed;
+        bottom: 0;
+        top: auto;
+        left: 0;
+        right: 0; /* Make it full width */
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+        padding: 10px;
+        box-sizing: border-box; /* Include padding in width */
+    }
+    /* lil-gui handles its own responsiveness to some extent */
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.3);}
-::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.2); border-radius: 4px;
+/* Custom scrollbar for lil-gui if needed, or general page scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.32);}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

@@ -3,22 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milky Way 3D Simulator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Enhanced Milky Way Simulation</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: Arial, sans-serif;
+        }
+        canvas { display: block; }
+        
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            z-index: 100;
+            display: block;
+            pointer-events: none;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #ffffff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #credits {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            text-align: right;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            font-family: Arial, sans-serif;
+            z-index: 200;
+        }
+        
+        #controls div {
+            margin-bottom: 8px;
+        }
+        
+        #infoPanel {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            width: 300px;
+            text-align: left;
+            z-index: 200;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background: #4169E1; /* Royal blue button to match image colors */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background: #1E40AF; /* Darker blue on hover */
+        }
+        
+        select {
+            padding: 5px;
+            border-radius: 4px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            margin-top: 3px;
+        }
+        
+        #tourMessage {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 600px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            z-index: 1000;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #controls, #infoPanel {
+                width: auto;
+                max-width: 90%;
+                font-size: 14px;
+            }
+            
+            button, select {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="info">Milky Way 3D Simulator &mdash; Scientifically Inspired Galaxy View</div>
+    <div id="info">Enhanced Milky Way Galaxy Simulation</div>
+    
     <div id="loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Generating Milky Way Simulation...</div>
-        <div style="font-size:16px; margin-top:10px;">Rendering 500,000+ stars, please wait</div>
+        <div class="spinner"></div>
+        <div>Generating Milky Way Simulation...</div>
+        <div style="font-size: 16px; margin-top: 10px;">Rendering 500,000+ stars, please wait</div>
     </div>
+    
     <div id="controls">
         <div><label><input type="checkbox" id="labelToggle" checked> Show Labels</label></div>
         <div><label><input type="checkbox" id="rotationToggle" checked> Enable Rotation</label></div>
         <div><label><input type="checkbox" id="gridToggle" checked> Show Galactic Plane</label></div>
         <div>
-            View:
+            View: 
             <select id="viewSelection">
                 <option value="default">Default</option>
                 <option value="top">Top-Down</option>
@@ -28,21 +172,25 @@
         </div>
         <button id="tourButton">Start Guided Tour</button>
     </div>
+    
     <div id="infoPanel">
-        <h3 style="margin-top:0;">Milky Way Galaxy</h3>
+        <h3 style="margin-top: 0;">Milky Way Galaxy</h3>
         <div>Type: Barred Spiral (SBc)</div>
         <div>Diameter: ~100,000 light years</div>
         <div>Stars: ~100-400 billion</div>
         <div>Age: ~13.6 billion years</div>
         <div>Sun distance from center: ~27,000 ly</div>
-        <div style="margin-top:10px;">Camera distance: <span id="cameraDistance">0</span> units</div>
+        <div style="margin-top: 10px;">Camera distance: <span id="cameraDistance">0</span> units</div>
     </div>
+    
     <div id="credits">
-        Milky Way 3D Simulator<br>
-        Based on NASA/ESA data | Enhanced for realism
+        Enhanced Milky Way Simulation<br>
+        Based on scientific data from NASA/ESA
     </div>
+    
     <canvas id="galaxyCanvas"></canvas>
-    <!-- Three.js & importmap -->
+    
+    <!-- Import libraries -->
     <script type="importmap">
         {
             "imports": {
@@ -51,10 +199,13 @@
             }
         }
     </script>
+    
     <!-- GSAP Animation Library (for smooth camera transitions) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    
     <!-- Main Script -->
     <script type="module" src="script.js"></script>
+    
     <script>
         // Remove loading screen when simulation is ready
         window.addEventListener('load', function() {
@@ -62,8 +213,8 @@
                 document.getElementById('loading').style.opacity = 0;
                 setTimeout(function() {
                     document.getElementById('loading').style.display = 'none';
-                }, 1200);
-            }, 3400);
+                }, 1000);
+            }, 3000); // Give extra time for the simulation to initialize
         });
     </script>
 </body>
