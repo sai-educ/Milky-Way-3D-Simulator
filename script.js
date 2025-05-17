@@ -64,22 +64,23 @@ const parameters = {
     localArmLength: 0.5,       // Shorter than major arms
     
     // Star Colors (scientifically based)
+    // Star Colors (scientifically based on the reference image)
     starPopulations: {
         // Population I: Young, metal-rich disk stars
-        youngBlue: new THREE.Color("#a2d5ff"),   // O/B stars, very hot
-        youngWhite: new THREE.Color("#f8f7ff"),  // A stars, hot
-        yellowSun: new THREE.Color("#fff2a7"),   // G stars like our Sun
-        orangeK: new THREE.Color("#ffbb7c"),     // K stars, cooler
-        redM: new THREE.Color("#ff9b6f"),        // M stars, coolest main sequence
+        youngBlue: new THREE.Color("#a2c8ff"),   // O/B stars, very hot - more subtle blue
+        youngWhite: new THREE.Color("#ffffff"),  // A stars, pure white as in image
+        yellowSun: new THREE.Color("#fff7d9"),   // G stars like our Sun - slightly warmer white
+        orangeK: new THREE.Color("#ffdeaa"),     // K stars, slightly orange
+        redM: new THREE.Color("#ffc396"),        // M stars, cooler main sequence - soft orange
         
         // Population II: Old, metal-poor halo stars
-        oldRed: new THREE.Color("#ff7a5c"),      // Old red giants
-        oldYellow: new THREE.Color("#ffe2a0"),   // Older stars
+        oldRed: new THREE.Color("#ff9e7c"),      // Old red giants - more muted red
+        oldYellow: new THREE.Color("#ffe8c0"),   // Older stars - warm white
         
         // Special star types
-        blueGiant: new THREE.Color("#6faaff"),   // Bright massive blue giants
-        redGiant: new THREE.Color("#ff6242"),    // Red giants
-        hiiRegion: new THREE.Color("#ff2d92")    // H-II regions (pink)
+        blueGiant: new THREE.Color("#8ab5ff"),   // Bright massive blue giants
+        redGiant: new THREE.Color("#ff8261"),    // Red giants
+        hiiRegion: new THREE.Color("#ff6a8c")    // H-II regions (soft pink as in image)
     },
     
     // Population ratios (for realism)
@@ -838,18 +839,18 @@ function createArmLabels() {
     
     // Create a label for each spiral arm
     for (let i = 0; i < parameters.numArms; i++) {
-        // Create text sprite
+        // Create text sprite with larger canvas for better text rendering
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 256;
-        canvas.height = 128;
+        canvas.width = 512;  // Doubled size for better text clarity
+        canvas.height = 256; // Doubled height to avoid text clipping
         
         // Background with slight transparency
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Text
-        context.font = 'bold 36px Arial';
+        // Text with proper padding
+        context.font = 'bold 64px Arial'; // Larger font size for the bigger canvas
         context.fillStyle = 'white';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
@@ -872,11 +873,12 @@ function createArmLabels() {
         
         sprite.position.set(
             Math.cos(angle) * radius,
-            6, // Height above the disk
+            8, // Increased height above the disk for better visibility
             Math.sin(angle) * radius
         );
         
-        sprite.scale.set(10 * parameters.labelScale, 5 * parameters.labelScale, 1);
+        // Adjusted scale for the larger canvas but similar visual size
+        sprite.scale.set(14 * parameters.labelScale, 7 * parameters.labelScale, 1);
         armLabels.push(sprite);
         scene.add(sprite);
     }
@@ -885,19 +887,19 @@ function createArmLabels() {
     if (parameters.localArmEnabled) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 256;
-        canvas.height = 128;
+        canvas.width = 512;
+        canvas.height = 256;
         
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
         
-        context.font = 'bold 28px Arial';
+        context.font = 'bold 56px Arial';
         context.fillStyle = 'white';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
-        context.fillText('Orion Arm', canvas.width / 2, canvas.height / 2);
-        context.font = '18px Arial';
-        context.fillText('(Local Arm)', canvas.width / 2, canvas.height / 2 + 25);
+        context.fillText('Orion Arm', canvas.width / 2, canvas.height / 2 - 20);
+        context.font = '36px Arial';
+        context.fillText('(Local Arm)', canvas.width / 2, canvas.height / 2 + 40);
         
         const texture = new THREE.CanvasTexture(canvas);
         const material = new THREE.SpriteMaterial({ 
@@ -915,11 +917,11 @@ function createArmLabels() {
         
         sprite.position.set(
             Math.cos(angle) * radius,
-            5, // Height above the disk
+            7, // Height above the disk
             Math.sin(angle) * radius
         );
         
-        sprite.scale.set(10 * parameters.labelScale, 5 * parameters.labelScale, 1);
+        sprite.scale.set(14 * parameters.labelScale, 7 * parameters.labelScale, 1);
         armLabels.push(sprite);
         scene.add(sprite);
     }
@@ -927,13 +929,13 @@ function createArmLabels() {
     // Add Sun position marker
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = 128;
-    canvas.height = 128;
+    canvas.width = 256;
+    canvas.height = 256;
     
     context.fillStyle = 'rgba(0, 0, 0, 0.7)';
     context.fillRect(0, 0, canvas.width, canvas.height);
     
-    context.font = 'bold 24px Arial';
+    context.font = 'bold 48px Arial';
     context.fillStyle = 'yellow';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
@@ -954,20 +956,20 @@ function createArmLabels() {
     
     sprite.position.set(
         Math.cos(sunAngle) * sunRadius,
-        1, // Just above the disk
+        2, // Raised slightly for better visibility
         Math.sin(sunAngle) * sunRadius
     );
     
-    sprite.scale.set(5 * parameters.labelScale, 5 * parameters.labelScale, 1);
+    sprite.scale.set(7 * parameters.labelScale, 7 * parameters.labelScale, 1);
     armLabels.push(sprite);
     scene.add(sprite);
     
-    // Create actual visible Sun marker
-    const sunGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+    // Create actual visible Sun marker with glow
+    const sunGeometry = new THREE.SphereGeometry(0.8, 16, 16); // Larger for better visibility
     const sunMaterial = new THREE.MeshBasicMaterial({ 
-        color: 0xffff00,
-        emissive: 0xffff00,
-        emissiveIntensity: 2
+        color: 0xffffaa, // Warm white-yellow color like our sun
+        emissive: 0xffffaa,
+        emissiveIntensity: 3
     });
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     sunMesh.position.set(
@@ -976,8 +978,49 @@ function createArmLabels() {
         Math.sin(sunAngle) * sunRadius
     );
     
+    // Add a glow effect to the Sun
+    const sunGlowGeometry = new THREE.SphereGeometry(1.5, 16, 16);
+    const sunGlowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffdd,
+        transparent: true,
+        opacity: 0.4,
+        side: THREE.BackSide
+    });
+    const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
+    sunMesh.add(sunGlow);
+    
     armLabels.push(sunMesh);
     scene.add(sunMesh);
+    
+    // Add a central core label
+    const coreCanvas = document.createElement('canvas');
+    const coreContext = coreCanvas.getContext('2d');
+    coreCanvas.width = 512;
+    coreCanvas.height = 256;
+    
+    coreContext.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    coreContext.fillRect(0, 0, coreCanvas.width, coreCanvas.height);
+    
+    coreContext.font = 'bold 56px Arial';
+    coreContext.fillStyle = 'white';
+    coreContext.textAlign = 'center';
+    coreContext.textBaseline = 'middle';
+    coreContext.fillText('Galactic Center', coreCanvas.width / 2, coreCanvas.height / 2 - 20);
+    coreContext.font = '36px Arial';
+    coreContext.fillText('Sagittarius A*', coreCanvas.width / 2, coreCanvas.height / 2 + 40);
+    
+    const coreTexture = new THREE.CanvasTexture(coreCanvas);
+    const coreMaterial = new THREE.SpriteMaterial({ 
+        map: coreTexture,
+        transparent: true,
+        depthWrite: false
+    });
+    
+    const coreSprite = new THREE.Sprite(coreMaterial);
+    coreSprite.position.set(0, 12, 0); // Above the center
+    coreSprite.scale.set(15 * parameters.labelScale, 7.5 * parameters.labelScale, 1);
+    armLabels.push(coreSprite);
+    scene.add(coreSprite);
 }
 
 // --- Add Galactic Plane Reference Grid ---
@@ -1096,9 +1139,9 @@ function generateSimulation() {
 const renderScene = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.8,    // Bloom strength - Increased for more glow
-    0.6,    // Bloom radius - Wider for better spread
-    0.75    // Bloom threshold - Lower to make more stars bloom
+    1.0,    // Bloom strength - Increased for more prominent glow like in the image
+    0.7,    // Bloom radius - Wider for better spread
+    0.65    // Bloom threshold - Lower to make more stars bloom as in image
 );
 
 // Add FXAA for smoother stars
