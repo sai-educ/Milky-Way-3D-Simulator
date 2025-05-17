@@ -364,8 +364,7 @@ function createGalaxyComponent(type) {
                 z = Math.sin(angle) * radius;
                 
                 // Determine disk thickness based on position
-                let currentDiskThickness = parameters.diskThicknessBase * 
-                    (1.0 - Math.pow(radius / parameters.diskRadius, parameters.diskThicknessEdgeFactor));
+                let currentDiskThickness = parameters.diskThicknessBase * (1.0 - Math.pow(radius / parameters.diskRadius, parameters.diskThicknessEdgeFactor));
                 
                 // Thicker in arms
                 if (inSpiralArm) {
@@ -643,13 +642,13 @@ function createGlobularClusters() {
             
             // Use Plummer model for realistic globular cluster density distribution
             const rad = clusterRadius * Math.pow(Math.random(), -0.5);
-            const phi = Math.random() * Math.PI * 2;
-            const theta = Math.acos(Math.random() * 2 - 1);
+            const phi_star = Math.random() * Math.PI * 2; // Renamed to avoid conflict with outer phi
+            const theta_star = Math.acos(Math.random() * 2 - 1); // Renamed to avoid conflict
             
             // Position relative to cluster center
-            positions[idx] = clusterCenter.x + rad * Math.sin(theta) * Math.cos(phi);
-            positions[idx+1] = clusterCenter.y + rad * Math.sin(theta) * Math.sin(phi);
-            positions[idx+2] = clusterCenter.z + rad * Math.cos(phi);
+            positions[idx] = clusterCenter.x + rad * Math.sin(theta_star) * Math.cos(phi_star);
+            positions[idx+1] = clusterCenter.y + rad * Math.sin(theta_star) * Math.sin(phi_star);
+            positions[idx+2] = clusterCenter.z + rad * Math.cos(theta_star);
             
             // Globular clusters are mostly old, Population II stars
             const starType = Math.random() < 0.9 ? 'oldYellow' : 'oldRed';
@@ -842,16 +841,16 @@ function createArmLabels() {
         // Create text sprite with larger canvas for better text rendering
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 512;  // Doubled size for better text clarity
-        canvas.height = 256; // Doubled height to avoid text clipping
+        canvas.width = 640;  // MODIFIED: Increased width to prevent cutoff
+        canvas.height = 256; 
         
         // Background with slight transparency
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
         
         // Text with proper padding
-        context.font = 'bold 64px Arial'; // Larger font size for the bigger canvas
-        context.fillStyle = 'white';
+        context.font = 'bold 64px Arial'; 
+        context.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color to reduce glow
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillText(parameters.armNames[i], canvas.width / 2, canvas.height / 2);
@@ -868,17 +867,21 @@ function createArmLabels() {
         
         // Position at a good point along the arm
         const armPhase = parameters.armPhaseOffset[i];
-        const radius = parameters.diskRadius * 0.7; // Position at 70% of disk radius
+        const radius = parameters.diskRadius * 0.7; 
         const angle = armPhase + (radius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness;
         
         sprite.position.set(
             Math.cos(angle) * radius,
-            8, // Increased height above the disk for better visibility
+            8, 
             Math.sin(angle) * radius
         );
         
         // Adjusted scale for the larger canvas but similar visual size
-        sprite.scale.set(14 * parameters.labelScale, 7 * parameters.labelScale, 1);
+        // Consider adjusting these values if labels appear too large or small after canvas width change
+        const adjustedScaleWidth = (canvas.width / 512) * 14 * parameters.labelScale; 
+        const adjustedScaleHeight = (canvas.height / 256) * 7 * parameters.labelScale;
+        sprite.scale.set(adjustedScaleWidth, adjustedScaleHeight, 1);
+
         armLabels.push(sprite);
         scene.add(sprite);
     }
@@ -887,14 +890,14 @@ function createArmLabels() {
     if (parameters.localArmEnabled) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 512;
+        canvas.width = 640; // MODIFIED: Increased width
         canvas.height = 256;
         
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
         
         context.font = 'bold 56px Arial';
-        context.fillStyle = 'white';
+        context.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillText('Orion Arm', canvas.width / 2, canvas.height / 2 - 20);
@@ -912,73 +915,73 @@ function createArmLabels() {
         
         // Position at the middle of the local arm
         const armPhase = parameters.localArmPhaseOffset;
-        const radius = parameters.diskRadius * 0.5; // Position at 50% of disk radius for local arm
+        const radius = parameters.diskRadius * 0.5; 
         const angle = armPhase + (radius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness;
         
         sprite.position.set(
             Math.cos(angle) * radius,
-            7, // Height above the disk
+            7, 
             Math.sin(angle) * radius
         );
         
-        sprite.scale.set(14 * parameters.labelScale, 7 * parameters.labelScale, 1);
+        const adjustedScaleWidth = (canvas.width / 512) * 14 * parameters.labelScale;
+        const adjustedScaleHeight = (canvas.height / 256) * 7 * parameters.labelScale;
+        sprite.scale.set(adjustedScaleWidth, adjustedScaleHeight, 1);
         armLabels.push(sprite);
         scene.add(sprite);
     }
     
-    // Add Sun position marker
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = 256;
-    canvas.height = 256;
+    // Add Sun position marker (text label)
+    const sunTextCanvas = document.createElement('canvas'); // Renamed to avoid conflict
+    const sunTextContext = sunTextCanvas.getContext('2d'); // Renamed to avoid conflict
+    sunTextCanvas.width = 256; 
+    sunTextCanvas.height = 256;
     
-    context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    sunTextContext.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    sunTextContext.fillRect(0, 0, sunTextCanvas.width, sunTextCanvas.height);
     
-    context.font = 'bold 48px Arial';
-    context.fillStyle = 'yellow';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText('Sun', canvas.width / 2, canvas.height / 2);
+    sunTextContext.font = 'bold 48px Arial';
+    sunTextContext.fillStyle = '#DCDC00'; // MODIFIED: Less bright yellow to reduce glow
+    sunTextContext.textAlign = 'center';
+    sunTextContext.textBaseline = 'middle';
+    sunTextContext.fillText('Sun', sunTextCanvas.width / 2, sunTextCanvas.height / 2);
     
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ 
-        map: texture,
+    const sunTexture = new THREE.CanvasTexture(sunTextCanvas); // Use renamed canvas
+    const sunLabelMaterial = new THREE.SpriteMaterial({  // Renamed to avoid conflict
+        map: sunTexture,
         transparent: true,
         depthWrite: false
     });
     
-    const sprite = new THREE.Sprite(material);
+    const sunSprite = new THREE.Sprite(sunLabelMaterial); // Renamed to avoid conflict
     
-    // Position of the Sun - approximately 8.2 kpc from galactic center in Orion Arm
     const sunRadius = parameters.diskRadius * 0.55;
     const sunAngle = parameters.localArmPhaseOffset + (sunRadius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2;
     
-    sprite.position.set(
+    sunSprite.position.set(
         Math.cos(sunAngle) * sunRadius,
-        2, // Raised slightly for better visibility
+        2, 
         Math.sin(sunAngle) * sunRadius
     );
     
-    sprite.scale.set(7 * parameters.labelScale, 7 * parameters.labelScale, 1);
-    armLabels.push(sprite);
-    scene.add(sprite);
+    sunSprite.scale.set(7 * parameters.labelScale, 7 * parameters.labelScale, 1);
+    armLabels.push(sunSprite);
+    scene.add(sunSprite);
     
     // Create actual visible Sun marker with glow
-    const sunGeometry = new THREE.SphereGeometry(0.8, 16, 16); // Larger for better visibility
+    const sunGeometry = new THREE.SphereGeometry(0.8, 16, 16); 
     const sunMaterial = new THREE.MeshBasicMaterial({ 
-        color: 0xffffaa, // Warm white-yellow color like our sun
+        color: 0xffffaa, 
         emissive: 0xffffaa,
         emissiveIntensity: 3
     });
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     sunMesh.position.set(
         Math.cos(sunAngle) * sunRadius,
-        0, // In the disk
+        0, 
         Math.sin(sunAngle) * sunRadius
     );
     
-    // Add a glow effect to the Sun
     const sunGlowGeometry = new THREE.SphereGeometry(1.5, 16, 16);
     const sunGlowMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffdd,
@@ -995,14 +998,14 @@ function createArmLabels() {
     // Add a central core label
     const coreCanvas = document.createElement('canvas');
     const coreContext = coreCanvas.getContext('2d');
-    coreCanvas.width = 512;
+    coreCanvas.width = 640; // MODIFIED: Increased width
     coreCanvas.height = 256;
     
     coreContext.fillStyle = 'rgba(0, 0, 0, 0.7)';
     coreContext.fillRect(0, 0, coreCanvas.width, coreCanvas.height);
     
     coreContext.font = 'bold 56px Arial';
-    coreContext.fillStyle = 'white';
+    coreContext.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color
     coreContext.textAlign = 'center';
     coreContext.textBaseline = 'middle';
     coreContext.fillText('Galactic Center', coreCanvas.width / 2, coreCanvas.height / 2 - 20);
@@ -1017,8 +1020,12 @@ function createArmLabels() {
     });
     
     const coreSprite = new THREE.Sprite(coreMaterial);
-    coreSprite.position.set(0, 12, 0); // Above the center
-    coreSprite.scale.set(15 * parameters.labelScale, 7.5 * parameters.labelScale, 1);
+    coreSprite.position.set(0, 12, 0); 
+    
+    const adjustedCoreScaleWidth = (coreCanvas.width / 512) * 15 * parameters.labelScale;
+    const adjustedCoreScaleHeight = (coreCanvas.height / 256) * 7.5 * parameters.labelScale;
+    coreSprite.scale.set(adjustedCoreScaleWidth, adjustedCoreScaleHeight, 1);
+
     armLabels.push(coreSprite);
     scene.add(coreSprite);
 }
@@ -1130,6 +1137,11 @@ function generateSimulation() {
     createArmLabels();
     
     // Create galactic plane reference
+    if (galacticPlane) { // Dispose old one if exists
+        scene.remove(galacticPlane);
+        galacticPlane.geometry.dispose();
+        galacticPlane.material.dispose();
+    }
     galacticPlane = createGalacticPlane();
     
     console.log("Generation Complete.");
@@ -1139,9 +1151,9 @@ function generateSimulation() {
 const renderScene = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.0,    // Bloom strength - Increased for more prominent glow like in the image
-    0.7,    // Bloom radius - Wider for better spread
-    0.65    // Bloom threshold - Lower to make more stars bloom as in image
+    1.0,    // Bloom strength 
+    0.7,    // Bloom radius 
+    0.65    // Bloom threshold 
 );
 
 // Add FXAA for smoother stars
@@ -1169,125 +1181,119 @@ window.addEventListener('resize', () => {
     fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * window.devicePixelRatio);
 });
 
-// --- Guided Tour Functions ---
+// --- Guided Tour Functions (using GSAP if available) ---
 function startGuidedTour() {
     let tourStep = 0;
     const tourSteps = [
         {
-            // Overview
             position: { x: 0, y: 120, z: 0 },
             target: { x: 0, y: 0, z: 0 },
             message: "Welcome to the Milky Way Galaxy simulation. This is a top-down view of our galaxy, showing its spiral arm structure."
         },
         {
-            // Spiral arms
             position: { x: 0, y: 90, z: 90 },
             target: { x: 0, y: 0, z: 0 },
             message: "The Milky Way has four major spiral arms: Perseus, Scutum-Centaurus, Sagittarius, and the Outer arm."
         },
         {
-            // Bar structure
             position: { x: 40, y: 50, z: 40 },
             target: { x: 0, y: 0, z: 0 },
             message: "Our galaxy is a barred spiral galaxy. Notice the elongated bar structure in the center, approximately 27,000 light-years in length."
         },
         {
-            // Central bulge
             position: { x: 0, y: 15, z: 40 },
             target: { x: 0, y: 0, z: 0 },
             message: "The central bulge contains mostly older, redder stars. It's about 10,000 light-years in radius."
         },
         {
-            // Edge-on view
             position: { x: 0, y: 10, z: 120 },
             target: { x: 0, y: 0, z: 0 },
             message: "From the edge, you can see that the Milky Way is quite thin compared to its diameter - only about 1,000 light-years thick."
         },
         {
-            // Stellar halo
             position: { x: 60, y: 60, z: 60 },
             target: { x: 0, y: 0, z: 0 },
             message: "The stellar halo surrounds the disk and contains older stars and globular clusters orbiting our galaxy."
         },
         {
-            // Sun's position
-            position: { x: 30, y: 10, z: 10 },
-            target: { x: 0, y: 0, z: 0 },
-            message: "Our Sun is located about 27,000 light-years from the galactic center, in a small feature called the Orion Arm."
+            position: { x: 30, y: 10, z: 10 }, // Positioned closer to the Sun
+            target: { // Look towards the Sun's approximate location for context
+                x: parameters.diskRadius * 0.55 * Math.cos(parameters.localArmPhaseOffset + (parameters.diskRadius*0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2), 
+                y: 0, 
+                z: parameters.diskRadius * 0.55 * Math.sin(parameters.localArmPhaseOffset + (parameters.diskRadius*0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2)
+            },
+            message: "Our Sun is located about 27,000 light-years from the galactic center, in a smaller feature called the Orion Arm (or Local Arm)."
         },
         {
-            // Return to overview
             position: { x: 0, y: 90, z: 100 },
             target: { x: 0, y: 0, z: 0 },
             message: "This concludes our tour. Feel free to explore the galaxy using the controls provided."
         }
     ];
     
+    const tourMessageDiv = document.getElementById('tourMessage');
+    const tourMessageContent = document.getElementById('tourMessageContent');
+    const prevStepButton = document.getElementById('prevStep');
+    const nextStepButton = document.getElementById('nextStep');
+    const endTourButton = document.getElementById('endTour');
+
     function showTourMessage(message) {
-        // Create or update message panel
-        let messageDiv = document.getElementById('tourMessage');
-        if (!messageDiv) {
-            messageDiv = document.createElement('div');
-            messageDiv.id = 'tourMessage';
-            
-            // Add navigation buttons
-            const buttonsDiv = document.createElement('div');
-            buttonsDiv.style.marginTop = '10px';
-            buttonsDiv.innerHTML = `
-                <button id="prevStep" style="margin-right: 10px;">Previous</button>
-                <button id="nextStep">Next</button>
-                <button id="endTour" style="margin-left: 20px;">End Tour</button>
-            `;
-            messageDiv.appendChild(buttonsDiv);
-            document.body.appendChild(messageDiv);
-            
-            // Add button event listeners
-            document.getElementById('prevStep').addEventListener('click', () => {
-                tourStep = Math.max(0, tourStep - 1);
-                goToTourStep(tourStep);
-            });
-            
-            document.getElementById('nextStep').addEventListener('click', () => {
-                tourStep = Math.min(tourSteps.length - 1, tourStep + 1);
-                goToTourStep(tourStep);
-            });
-            
-            document.getElementById('endTour').addEventListener('click', () => {
-                document.body.removeChild(messageDiv);
-            });
-        }
-        
-        // Update message content
-        messageDiv.firstChild?.nodeType === Node.TEXT_NODE 
-            ? messageDiv.replaceChild(document.createTextNode(message), messageDiv.firstChild)
-            : messageDiv.insertBefore(document.createTextNode(message), messageDiv.firstChild);
+        if (tourMessageContent) tourMessageContent.textContent = message;
+        if (tourMessageDiv) tourMessageDiv.style.display = 'block';
+        if (prevStepButton) prevStepButton.disabled = (tourStep === 0);
+        if (nextStepButton) nextStepButton.disabled = (tourStep === tourSteps.length - 1);
     }
     
     function goToTourStep(step) {
+        tourStep = step;
         const currentStep = tourSteps[step];
         
-        // Move camera to position
-        gsap.to(camera.position, {
-            x: currentStep.position.x,
-            y: currentStep.position.y,
-            z: currentStep.position.z,
-            duration: 2,
-            onUpdate: function() {
-                camera.lookAt(
-                    currentStep.target.x,
-                    currentStep.target.y,
-                    currentStep.target.z
-                );
-            },
-            onComplete: function() {
-                showTourMessage(currentStep.message);
-            }
-        });
+        if (typeof gsap !== 'undefined') {
+            gsap.to(camera.position, {
+                x: currentStep.position.x,
+                y: currentStep.position.y,
+                z: currentStep.position.z,
+                duration: 2,
+                onUpdate: function() {
+                    controls.target.set(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+                    camera.lookAt(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+                },
+                onComplete: function() {
+                    controls.target.set(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+                    camera.lookAt(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+                    controls.update(); // Ensure controls internal state is updated
+                    showTourMessage(currentStep.message);
+                }
+            });
+        } else { // Fallback if GSAP is not loaded
+            camera.position.set(currentStep.position.x, currentStep.position.y, currentStep.position.z);
+            controls.target.set(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+            camera.lookAt(currentStep.target.x, currentStep.target.y, currentStep.target.z);
+            controls.update();
+            showTourMessage(currentStep.message);
+        }
+    }
+    
+    if (prevStepButton) {
+        prevStepButton.onclick = () => { // Use onclick for simplicity or manage event listeners carefully
+            if (tourStep > 0) goToTourStep(tourStep - 1);
+        };
+    }
+    if (nextStepButton) {
+        nextStepButton.onclick = () => {
+            if (tourStep < tourSteps.length - 1) goToTourStep(tourStep + 1);
+        };
+    }
+    if (endTourButton && tourMessageDiv) {
+        endTourButton.onclick = () => {
+            tourMessageDiv.style.display = 'none';
+        };
     }
     
     // Start tour
     goToTourStep(tourStep);
 }
+
 
 // --- Animation Loop ---
 function animate() {
@@ -1295,34 +1301,42 @@ function animate() {
 
     // Apply rotation if enabled
     if (rotationEnabled) {
-        const delta = parameters.rotationSpeed;
+        const delta = parameters.rotationSpeed; // This is a very small value, consider time-based rotation: clock.getDelta() * parameters.rotationSpeed
         if (galaxyPoints) galaxyPoints.rotation.y += delta;
         if (barPoints) barPoints.rotation.y += delta;
         if (dustPoints) dustPoints.rotation.y += delta;
         if (haloPoints) haloPoints.rotation.y += delta;
         
-        // Globular clusters rotate at a different rate
         if (globularClusters.length > 0) {
             globularClusters.forEach(cluster => {
-                cluster.rotation.y += delta * 0.5; // Slower rotation for globular clusters
+                cluster.rotation.y += delta * 0.5; 
             });
         }
         
-        // Labels should follow the rotation
-        if (armLabels.length > 0 && parameters.showLabels) {
-            armLabels.forEach(label => {
-                if (label instanceof THREE.Sprite || label instanceof THREE.Mesh) {
-                    label.rotation.y += delta;
-                }
-            });
-        }
+        // Labels should NOT rotate with the galaxy components if they are world-space billboards
+        // However, if their positions are relative to a rotating object and you want them to maintain that relative position,
+        // their positions would need to be updated, or they'd need to be parented to the rotating object.
+        // Current setup has them as independent sprites in world space, so their individual rotation.y is not what we want.
+        // They should always face the camera (which sprites do by default unless rotation is manipulated).
+        // If the intention was for them to orbit with the galaxy structure, their positions would need recalculation each frame
+        // based on the galaxy's rotation. The current code rotates the label objects themselves, which is not standard for billboards.
+        // For simplicity, and assuming the labels are meant to be static relative to the galaxy's features,
+        // their initial positions are calculated once. If the galaxy rotates, the labels should appear to rotate with it due to their fixed world positions.
+        // The current rotation logic for armLabels might make them spin on their own Y-axis, which might not be intended.
+        // This line might be problematic:
+        // armLabels.forEach(label => { if (label instanceof THREE.Sprite || label instanceof THREE.Mesh) { label.rotation.y += delta; } });
+        // Let's remove label.rotation.y += delta; for typical billboard behavior.
+        // If you want them to appear to move *with* the galaxy features, their *positions* must be updated relative to the galaxy's rotation.
     }
 
     controls.update();
     composer.render();
     
     // Update camera distance display
-    document.getElementById('cameraDistance').textContent = Math.round(camera.position.length());
+    const camDistEl = document.getElementById('cameraDistance');
+    if (camDistEl) {
+        camDistEl.textContent = Math.round(camera.position.length());
+    }
 }
 
 // --- Set up Event Listeners ---
@@ -1359,47 +1373,50 @@ document.addEventListener('DOMContentLoaded', function() {
     if (viewSelection) {
         viewSelection.addEventListener('change', function() {
             const view = this.value;
+            let targetPosition = {x: 0, y:0, z:0}; // Default target
+
+            let newCamPos = {};
             
             switch(view) {
                 case 'top':
-                    // Top-down view
-                    gsap.to(camera.position, { 
-                        x: 0, y: 150, z: 0, 
-                        duration: 2,
-                        onUpdate: function() { camera.lookAt(0, 0, 0); }
-                    });
+                    newCamPos = { x: 0, y: 150, z: 0 };
                     break;
                 case 'edge':
-                    // Edge-on view
-                    gsap.to(camera.position, { 
-                        x: 0, y: 5, z: 150, 
-                        duration: 2,
-                        onUpdate: function() { camera.lookAt(0, 0, 0); }
-                    });
+                    newCamPos = { x: 0, y: 5, z: 150 };
                     break;
                 case 'sunperspective':
-                    // View from Sun position looking toward galactic center
                     const sunRadius = parameters.diskRadius * 0.55;
                     const sunAngle = parameters.localArmPhaseOffset + 
                         (sunRadius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2;
                     const sunX = Math.cos(sunAngle) * sunRadius;
                     const sunZ = Math.sin(sunAngle) * sunRadius;
-                    
-                    gsap.to(camera.position, { 
-                        x: sunX, y: 1, z: sunZ, 
-                        duration: 2,
-                        onComplete: function() {
-                            camera.lookAt(0, 0, 0);
-                        }
-                    });
+                    newCamPos = { x: sunX, y: 1, z: sunZ };
+                    // For sun perspective, maybe look towards galactic center
+                    // targetPosition = {x: 0, y: 0, z: 0 }; // This is already default
                     break;
-                default:
-                    // Default view
-                    gsap.to(camera.position, { 
-                        x: 0, y: 90, z: 100, 
-                        duration: 2,
-                        onUpdate: function() { camera.lookAt(0, 0, 0); }
-                    });
+                default: // 'default' view
+                    newCamPos = { x: 0, y: 90, z: 100 };
+            }
+
+            if (typeof gsap !== 'undefined') {
+                gsap.to(camera.position, { 
+                    ...newCamPos,
+                    duration: 2,
+                    onUpdate: function() { 
+                        controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
+                        camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+                    },
+                    onComplete: function() {
+                        controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
+                        camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+                        controls.update();
+                    }
+                });
+            } else {
+                camera.position.set(newCamPos.x, newCamPos.y, newCamPos.z);
+                controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
+                camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+                controls.update();
             }
         });
     }

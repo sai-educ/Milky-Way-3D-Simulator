@@ -83,7 +83,7 @@
         #infoPanel {
             position: absolute;
             bottom: 10px;
-            right: 10px;
+            left: 10px; /* MODIFIED: Was 'right: 10px;' */
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 5px;
@@ -118,32 +118,53 @@
         }
         
         #tourMessage {
+            display: none; /* Initially hidden */
             position: absolute;
-            bottom: 50px;
+            bottom: 60px; /* Adjusted to not overlap infoPanel too much */
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: white;
             padding: 15px;
-            border-radius: 5px;
-            max-width: 600px;
+            border-radius: 8px;
+            max-width: 90%;
+            width: 500px;
             text-align: center;
             font-family: Arial, sans-serif;
             font-size: 16px;
             z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #tourMessageContent {
+            margin-bottom: 15px;
+        }
+
+        #tourMessageNav button {
+            margin: 0 5px;
         }
         
         /* Responsive adjustments */
         @media (max-width: 768px) {
             #controls, #infoPanel {
                 width: auto;
-                max-width: 90%;
-                font-size: 14px;
+                max-width: calc(100% - 20px); /* Ensure padding within viewport */
+                font-size: 13px;
+            }
+            #infoPanel{
+                bottom: 10px;
+                left: 10px;
+                /* width: calc(100% - 20px); Ensure it doesn't overflow */
             }
             
             button, select {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            #tourMessage {
                 font-size: 14px;
-                padding: 6px 12px;
+                bottom: 20px;
+                width: calc(100% - 40px);
             }
         }
     </style>
@@ -182,6 +203,15 @@
         <div>Sun distance from center: ~27,000 ly</div>
         <div style="margin-top: 10px;">Camera distance: <span id="cameraDistance">0</span> units</div>
     </div>
+
+    <div id="tourMessage">
+        <div id="tourMessageContent">Welcome to the tour!</div>
+        <div id="tourMessageNav">
+            <button id="prevStep">Previous</button>
+            <button id="nextStep">Next</button>
+            <button id="endTour" style="margin-left: 15px;">End Tour</button>
+        </div>
+    </div>
     
     <div id="credits">
         Enhanced Milky Way Simulation<br>
@@ -190,7 +220,6 @@
     
     <canvas id="galaxyCanvas"></canvas>
     
-    <!-- Import libraries -->
     <script type="importmap">
         {
             "imports": {
@@ -200,21 +229,24 @@
         }
     </script>
     
-    <!-- GSAP Animation Library (for smooth camera transitions) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     
-    <!-- Main Script -->
     <script type="module" src="script.js"></script>
     
     <script>
         // Remove loading screen when simulation is ready
         window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loading').style.opacity = 0;
+            // Fallback for loading screen removal in case the simulation takes too long or fails to trigger a specific "ready" event.
+            // A more robust solution would be to have an event from script.js indicating completion.
+            const loadingScreen = document.getElementById('loading');
+            if (loadingScreen) {
                 setTimeout(function() {
-                    document.getElementById('loading').style.display = 'none';
-                }, 1000);
-            }, 3000); // Give extra time for the simulation to initialize
+                    loadingScreen.style.opacity = 0;
+                    setTimeout(function() {
+                        loadingScreen.style.display = 'none';
+                    }, 1000); // Wait for opacity transition to finish
+                }, 3000); // Adjust timeout as needed
+            }
         });
     </script>
 </body>
