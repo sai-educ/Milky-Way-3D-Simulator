@@ -13,7 +13,7 @@ const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 // Set a darker background for better contrast
-renderer.setClearColor(0x000005); // Very dark blue/black
+renderer.setClearColor(0x0a0a20); // Deep blue-purple background as per reference
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000); // Increased far plane
 camera.position.set(0, 60, 80); // Adjusted starting view
@@ -25,64 +25,64 @@ controls.screenSpacePanning = false;
 controls.minDistance = 1; // Allow closer zoom
 controls.maxDistance = 2000; // Allow zooming further out
 
-// Add subtle fog for distance falloff effect
-scene.fog = new THREE.FogExp2(0x000005, 0.0001);
+// Add subtle blue-purple fog for depth
+scene.fog = new THREE.FogExp2(0x1a0a30, 0.00008);
 
 // --- Scientifically Accurate Milky Way Parameters ---
 const parameters = {
     // Core Galaxy
-    galaxyParticleCount: 300000, // Increased for better detail
-    galaxySize: 0.05,          // Smaller particles for better look
-    diskRadius: 50,            // ~50,000 light years in our scale
-    diskThicknessBase: 0.6,    // Thin disk
-    diskThicknessEdgeFactor: 3.5,
-    
-    // Bulge & Bar parameters (Milky Way is a barred spiral)
-    bulgeRadius: 10,           // Central bulge (~10,000 light years)
-    bulgeHeight: 6,
-    bulgeDensityFactor: 4,     // Higher density in bulge
-    
-    // Bar parameters (Milky Way has a prominent bar)
-    barLength: 18,             // ~18,000 light years
-    barWidth: 6,
-    barHeight: 1.5,
-    barDensityFactor: 5,       // Bar has high star density
-    
+    galaxyParticleCount: 200000, // Reduced for performance
+    galaxySize: 0.05,
+    diskRadius: 50,
+    diskThicknessBase: 0.4,      // Thinner for better definition
+    diskThicknessEdgeFactor: 4.0,
+
+    // Bulge & Bar parameters
+    bulgeRadius: 8,            // Slightly smaller, more concentrated bulge
+    bulgeHeight: 4,
+    bulgeDensityFactor: 6,
+
+    // Bar parameters
+    barLength: 22,             // Longer bar as seen in reference
+    barWidth: 5,               // Thicker bar
+    barHeight: 1.2,
+    barDensityFactor: 6,
+
     // Spiral Arm Parameters
-    numArms: 4,                // Milky Way's primary arms
-    armNames: ['Perseus', 'Scutum-Centaurus', 'Sagittarius', 'Outer'],
-    armTightness: 0.30,        // Adjusted for Milky Way
-    armSpreadY: 4,             // Vertical spread
-    armWindingFactor: 3.1,     // ~3.1 radians ≈ 1.5 turns
-    armWidth: [0.3, 0.4, 0.35, 0.25], // Different widths for each arm
-    armPhaseOffset: [0, Math.PI/2, Math.PI, 3*Math.PI/2], // Offset each arm
-    
+    numArms: 2,                // Milky Way has 2 major arms (Perseus & Scutum-Centaurus)
+    armNames: ['Perseus', 'Scutum-Centaurus'],
+    armTightness: 0.45,        // Tighter winding
+    armSpreadY: 3,
+    armWindingFactor: 4.0,     // More winding
+    armWidth: [0.25, 0.25],      // Thinner arms for realism
+    armPhaseOffset: [0, Math.PI], // 180 degrees apart
+
     // Additional features
-    localArmEnabled: true,     // Local/Orion arm (where our Sun is)
-    localArmPhaseOffset: 1.6,  // Position between Perseus and Sagittarius
-    localArmSize: 0.6,         // Smaller than major arms
-    localArmLength: 0.5,       // Shorter than major arms
-    
+    localArmEnabled: true,
+    localArmPhaseOffset: -0.2, // Adjusted position for Local Arm
+    localArmSize: 0.4,           // Thinner local arm
+    localArmLength: 0.6,
+
     // Star Colors (scientifically based)
     // Star Colors (scientifically based on the reference image)
     starPopulations: {
         // Population I: Young, metal-rich disk stars
-        youngBlue: new THREE.Color("#a2c8ff"),   // O/B stars, very hot - more subtle blue
-        youngWhite: new THREE.Color("#ffffff"),  // A stars, pure white as in image
-        yellowSun: new THREE.Color("#fff7d9"),   // G stars like our Sun - slightly warmer white
-        orangeK: new THREE.Color("#ffdeaa"),     // K stars, slightly orange
-        redM: new THREE.Color("#ffc396"),        // M stars, cooler main sequence - soft orange
-        
+        youngBlue: new THREE.Color("#d0e0ff"),   // Bright blue-white (reference image)
+        youngWhite: new THREE.Color("#ffffff"),  // Pure white
+        yellowSun: new THREE.Color("#ffcc66"),   // Bright yellow (core)
+        orangeK: new THREE.Color("#ff9944"),     // Bright orange (core)
+        redM: new THREE.Color("#ff7050"),        // Red-orange
+
         // Population II: Old, metal-poor halo stars
-        oldRed: new THREE.Color("#ff9e7c"),      // Old red giants - more muted red
-        oldYellow: new THREE.Color("#ffe8c0"),   // Older stars - warm white
-        
+        oldRed: new THREE.Color("#d05040"),      // Dimmer red
+        oldYellow: new THREE.Color("#ffcc80"),   // Warm yellow
+
         // Special star types
-        blueGiant: new THREE.Color("#8ab5ff"),   // Bright massive blue giants
-        redGiant: new THREE.Color("#ff8261"),    // Red giants
-        hiiRegion: new THREE.Color("#ff6a8c")    // H-II regions (soft pink as in image)
+        blueGiant: new THREE.Color("#a0c0ff"),   // Bright blue-white giants
+        redGiant: new THREE.Color("#ff6030"),    // Red giants
+        hiiRegion: new THREE.Color("#aa55cc")    // Purple/magenta H-II regions (reference)
     },
-    
+
     // Population ratios (for realism)
     populationRatios: {
         diskPopI: 0.75,        // % of disk stars that are Pop I
@@ -92,32 +92,32 @@ const parameters = {
         haloPopI: 0.05,        // % of halo stars that are Pop I
         haloPopII: 0.95        // % of halo stars that are Pop II
     },
-    
+
     // Dust Lanes
-    dustParticleCount: 60000,  // Increased for better definition 
-    dustSize: 0.12,
-    dustOpacity: 0.5,
-    dustColor: new THREE.Color("#130a05"),
-    dustConcentration: 0.7,    // How concentrated dust is in arms
+    dustParticleCount: 40000,  // Reduced for performance
+    dustSize: 0.15,
+    dustOpacity: 0.35,         // Slightly more transparent
+    dustColor: new THREE.Color("#3a2050"), // Purple dust (reference image)
+    dustConcentration: 0.8,    // More concentrated in arms
 
     // Halo Component
-    haloParticleCount: 60000,
+    haloParticleCount: 30000,  // Reduced for performance
     haloRadius: 100,           // Extends beyond disk
     haloThickness: 70,         // More spherical
     haloSize: 0.08,
-    haloColor: new THREE.Color("#70a0ff"),
-    
+    haloColor: new THREE.Color("#406080"), // Subtle blue-grey halo
+
     // Globular Clusters
     globularClusters: true,
     globularCount: 8,         // Will generate globular clusters
     globularRadius: 3,
     globularDistanceRange: [20, 70],
-    
+
     // Background Stars
-    backgroundStarCount: 15000,
+    backgroundStarCount: 8000, // Reduced for performance
     backgroundStarSize: 0.06,
     backgroundSphereRadius: 2500,
-    
+
     // Visualization options
     rotationSpeed: 0.00010,    // Slower, majestic rotation
     showLabels: true,
@@ -184,7 +184,7 @@ function createGalaxyComponent(type) {
         let distanceFromCenterXZ; // Distance projected onto the galactic plane
         let stellarType = ''; // Used to determine star color
         let starSize = 1.0; // Default star size multiplier
-        
+
         // --- Different distributions based on component type ---
         if (type === 'halo') {
             // --- Halo Distribution (Spheroidal) ---
@@ -198,7 +198,7 @@ function createGalaxyComponent(type) {
             y = r * Math.sin(phi) * Math.sin(theta) * (parameters.haloThickness / parameters.haloRadius);
             z = r * Math.cos(phi);
             distanceFromCenterXZ = Math.sqrt(x * x + z * z);
-            
+
             // Halo populations - mostly Population II
             const isPopII = Math.random() < parameters.populationRatios.haloPopII;
             if (isPopII) {
@@ -208,29 +208,29 @@ function createGalaxyComponent(type) {
                 // Very few young stars in halo
                 stellarType = 'yellowSun';
             }
-            
+
             // Halo stars are generally dimmer
             starSize = 0.5 + Math.random() * 0.5;
-            
+
         } else if (type === 'bar') {
             // --- Central Bar Distribution ---
             // Elongated bar shape characteristic of barred spirals
             const u = Math.random() * 2 - 1; // -1 to 1
             const barRandom = Math.random();
-            
+
             // Bar position along major axis (elongated)
             x = u * parameters.barLength;
-            
+
             // Bar gets narrower toward the ends (quadratic shape)
             const maxBarWidth = parameters.barWidth * (1 - Math.pow(Math.abs(u), 2) * 0.6);
             z = (barRandom * 2 - 1) * maxBarWidth;
-            
+
             // Bar height distribution (thinner than bulge)
             const heightRandom = Math.pow(Math.random(), 2) * (Math.random() < 0.5 ? 1 : -1);
             y = heightRandom * parameters.barHeight;
-            
+
             distanceFromCenterXZ = Math.sqrt(x * x + z * z);
-            
+
             // Bar stellar composition - mix of old and younger stars
             const isPopI = Math.random() < parameters.populationRatios.bulgePopI;
             if (isPopI) {
@@ -244,15 +244,15 @@ function createGalaxyComponent(type) {
                 stellarType = Math.random() < 0.7 ? 'oldYellow' : 'oldRed';
                 if (Math.random() < 0.05) stellarType = 'redGiant';
             }
-            
+
             // Add more brighter stars in bar
             starSize = 0.7 + Math.random() * 0.8;
-            
+
         } else if (type === 'dust' || type === 'stars') {
             // --- Determine if in bulge, arms, or disk ---
             const radiusFraction = Math.random(); // Used to distribute along radius
             let radius, angle, inSpiralArm = false, armIndex = -1;
-            
+
             // Bulge Distribution (applies only to stars)
             const bulgeChance = Math.exp(-radiusFraction * 6) * parameters.bulgeDensityFactor;
             if (type === 'stars' && Math.random() < bulgeChance) {
@@ -260,15 +260,15 @@ function createGalaxyComponent(type) {
                 const r_bulge = Math.random() * parameters.bulgeRadius;
                 const theta_bulge = Math.random() * Math.PI * 2;
                 const phi_bulge = Math.acos(2 * Math.random() - 1);
-                
+
                 // Flattened spheroid for the bulge
                 const flatteningFactor = 0.7; // Bulge height/width ratio
                 x = r_bulge * Math.sin(phi_bulge) * Math.cos(theta_bulge);
                 z = r_bulge * Math.sin(phi_bulge) * Math.sin(theta_bulge);
                 y = r_bulge * Math.cos(phi_bulge) * flatteningFactor;
-                
+
                 distanceFromCenterXZ = Math.sqrt(x * x + z * z);
-                
+
                 // Bulge stellar populations
                 const isPopI = Math.random() < parameters.populationRatios.bulgePopI;
                 if (isPopI) {
@@ -283,99 +283,99 @@ function createGalaxyComponent(type) {
                     else if (randStar < 0.9) stellarType = 'oldRed';
                     else stellarType = 'redGiant'; // Some giants
                 }
-                
+
                 // Brighter core
                 starSize = 0.8 + Math.random() * 0.6;
-                
+
             } else {
                 // Disk / Spiral Arm Distribution
                 radius = radiusFraction * parameters.diskRadius;
                 angle = Math.random() * Math.PI * 2;
-                
+
                 // Determine if in a spiral arm
                 // Check each arm
                 for (let a = 0; a < parameters.numArms; a++) {
                     // Check if we're in this arm
                     const armWidth = parameters.armWidth[a] || parameters.armWidth[0];
                     const armPhase = parameters.armPhaseOffset[a] || 0;
-                    
+
                     // Distance along arm
                     const armDistance = radius / parameters.diskRadius;
-                    
+
                     // Arm angle at this radius
                     const spiralOffset = armDistance * parameters.armWindingFactor;
                     const idealArmAngle = armPhase + spiralOffset / parameters.armTightness;
-                    
+
                     // Angular distance from ideal arm position
                     let angleDelta = Math.abs(((angle - idealArmAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI));
                     if (angleDelta > Math.PI) angleDelta = 2 * Math.PI - angleDelta;
-                    
-                    // Max allowed angle variation is higher near center, tighter in outer parts
-                    const maxAngleSpread = armWidth * (0.5 - 0.3 * armDistance);
-                    
+
+                    // Max allowed angle variation - tighter for thinner arms
+                    const maxAngleSpread = armWidth * (0.3 - 0.2 * armDistance);
+
                     if (angleDelta < maxAngleSpread) {
                         inSpiralArm = true;
                         armIndex = a;
                         break;
                     }
                 }
-                
+
                 // Check Local Arm (Orion Arm) - smaller secondary arm
                 if (!inSpiralArm && parameters.localArmEnabled) {
                     const localArmPhase = parameters.localArmPhaseOffset;
                     const armDistance = radius / parameters.diskRadius;
-                    
+
                     // Local arm only exists in middle part of the disk
                     if (armDistance > 0.3 && armDistance < 0.7) {
                         const spiralOffset = armDistance * parameters.armWindingFactor;
                         const idealArmAngle = localArmPhase + spiralOffset / parameters.armTightness;
-                        
+
                         let angleDelta = Math.abs(((angle - idealArmAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI));
                         if (angleDelta > Math.PI) angleDelta = 2 * Math.PI - angleDelta;
-                        
+
                         const maxAngleSpread = parameters.localArmSize * (0.4 - 0.2 * armDistance);
-                        
+
                         if (angleDelta < maxAngleSpread) {
                             inSpiralArm = true;
                             armIndex = -99; // Special code for local arm
                         }
                     }
                 }
-                
+
                 // Modify position based on arm membership
                 let armPerturbation = 0;
                 if (inSpiralArm) {
                     // Add some scatter along the arm
                     const scatterDistance = Math.pow(Math.random(), 2) * radius * 0.1; // More scatter near center
                     const scatterAngle = (Math.random() * 2 - 1) * Math.PI * 0.1; // Small angle variation
-                    
+
                     // Apply scatter
                     radius += scatterDistance;
                     angle += scatterAngle;
-                    
+
                     // Add arm perturbation (warp) for dust
                     if (type === 'dust') {
-                        armPerturbation = Math.sin(radius * 0.2) * 0.2; 
+                        armPerturbation = Math.sin(radius * 0.2) * 0.2;
                     }
                 }
-                
+
                 // Calculate final position
                 x = Math.cos(angle) * radius;
                 z = Math.sin(angle) * radius;
-                
+
                 // Determine disk thickness based on position
                 let currentDiskThickness = parameters.diskThicknessBase * (1.0 - Math.pow(radius / parameters.diskRadius, parameters.diskThicknessEdgeFactor));
-                
+
                 // Thicker in arms
                 if (inSpiralArm) {
                     currentDiskThickness *= 1.3;
                 }
-                
+
                 // Y-position (height above/below disk)
                 // Use exponential distribution for more concentration near plane
                 const heightRandom = (Math.random() < 0.5 ? -1 : 1) * Math.pow(Math.random(), 2);
                 y = heightRandom * currentDiskThickness;
-                
+
                 // Dust lies closer to the plane and follows arms more strictly
                 if (type === 'dust') {
                     if (!inSpiralArm && Math.random() > parameters.dustConcentration) {
@@ -383,16 +383,16 @@ function createGalaxyComponent(type) {
                         positions[idx] = Infinity; // Mark for skipping
                         continue;
                     }
-                    
+
                     // Dust is concentrated near the plane
                     y *= 0.3;
-                    
+
                     // Add the arm perturbation to create dust lanes
                     y += armPerturbation;
                 }
-                
+
                 distanceFromCenterXZ = Math.sqrt(x * x + z * z);
-                
+
                 // --- Determine star type based on region and population ---
                 if (type === 'stars') {
                     // Base populations - different in arms vs disk
@@ -402,29 +402,29 @@ function createGalaxyComponent(type) {
                     } else {
                         isPopI = Math.random() < parameters.populationRatios.diskPopI;
                     }
-                    
+
                     if (isPopI) {
                         // Young, metal-rich Population I stars
                         const randStar = Math.random();
-                        
+
                         if (inSpiralArm) {
-                            // Arms have more massive, young stars
-                            if (randStar < 0.01) stellarType = 'youngBlue'; // Rare O/B stars
-                            else if (randStar < 0.1) stellarType = 'youngWhite'; // More A stars
-                            else if (randStar < 0.3) stellarType = 'yellowSun'; // G stars
-                            else if (randStar < 0.7) stellarType = 'orangeK'; // K stars
+                            // Arms have more color variety
+                            if (randStar < 0.008) stellarType = 'youngBlue'; // Slightly more blue for contrast
+                            else if (randStar < 0.08) stellarType = 'youngWhite'; // More white stars
+                            else if (randStar < 0.25) stellarType = 'yellowSun'; // Reduced yellow
+                            else if (randStar < 0.65) stellarType = 'orangeK'; // K stars
                             else stellarType = 'redM'; // M stars
-                            
+
                             // Some special types in arms
-                            if (randStar < 0.005) stellarType = 'blueGiant'; // Very rare massive stars
-                            else if (randStar < 0.02 && Math.random() < 0.3) stellarType = 'hiiRegion'; // H-II regions
+                            if (randStar < 0.002) stellarType = 'blueGiant';
+                            else if (randStar < 0.015 && Math.random() < 0.3) stellarType = 'hiiRegion';
                         } else {
-                            // Regular disk has fewer massive stars
-                            if (randStar < 0.001) stellarType = 'youngBlue'; // Very rare O/B stars
-                            else if (randStar < 0.05) stellarType = 'youngWhite'; // Fewer A stars
-                            else if (randStar < 0.3) stellarType = 'yellowSun'; // G stars
-                            else if (randStar < 0.7) stellarType = 'orangeK'; // K stars
-                            else stellarType = 'redM'; // M stars
+                            // Regular disk
+                            if (randStar < 0.0002) stellarType = 'youngBlue';
+                            else if (randStar < 0.02) stellarType = 'youngWhite';
+                            else if (randStar < 0.15) stellarType = 'yellowSun';
+                            else if (randStar < 0.55) stellarType = 'orangeK';
+                            else stellarType = 'redM';
                         }
                     } else {
                         // Older Population II stars
@@ -433,7 +433,7 @@ function createGalaxyComponent(type) {
                         else if (randStar < 0.95) stellarType = 'oldRed';
                         else stellarType = 'redGiant'; // Some giants
                     }
-                    
+
                     // Star size varies by type
                     if (stellarType === 'youngBlue' || stellarType === 'blueGiant') {
                         starSize = 1.2 + Math.random() * 0.8; // Larger
@@ -446,7 +446,7 @@ function createGalaxyComponent(type) {
                     } else {
                         starSize = 0.7 + Math.random() * 0.5; // Normal stars
                     }
-                    
+
                     // Distance-based dimming
                     const distanceFactor = 1.0 - Math.pow(distanceFromCenterXZ / parameters.diskRadius, 0.7) * 0.3;
                     starSize *= distanceFactor;
@@ -482,7 +482,7 @@ function createGalaxyComponent(type) {
         if (type === 'stars' || type === 'bar' || type === 'halo') {
             if (colors) {
                 let color = new THREE.Color();
-                
+
                 // Assign color based on stellar type
                 if (stellarType && parameters.starPopulations[stellarType]) {
                     color.copy(parameters.starPopulations[stellarType]);
@@ -490,24 +490,28 @@ function createGalaxyComponent(type) {
                     // Fallback based on distance from center
                     const lerpFactor = Math.min(distanceFromCenterXZ / (parameters.diskRadius * 0.7), 1.0);
                     color.lerpColors(
-                        parameters.starPopulations.yellowSun, 
-                        parameters.starPopulations.oldYellow, 
+                        parameters.starPopulations.yellowSun,
+                        parameters.starPopulations.oldYellow,
                         lerpFactor
                     );
                 }
-                
+
                 // Apply more realistic color distribution
                 // Slight color variations for realism
                 const variation = 0.05;
                 color.r += (Math.random() - 0.5) * variation;
                 color.g += (Math.random() - 0.5) * variation;
                 color.b += (Math.random() - 0.5) * variation;
-                
-                // Increase brightness for certain types
+
+                // Increase brightness for certain types (reference image aesthetic)
                 if (stellarType === 'blueGiant' || stellarType === 'youngBlue') {
-                    color.multiplyScalar(1.5); // Much brighter
+                    color.multiplyScalar(2.0); // Much brighter for blue stars
+                } else if (stellarType === 'youngWhite') {
+                    color.multiplyScalar(1.8); // Bright white stars
+                } else if (stellarType === 'yellowSun' || stellarType === 'orangeK') {
+                    color.multiplyScalar(1.5); // Bright core colors
                 }
-                
+
                 // Store final color
                 colors[idx] = color.r;
                 colors[idx + 1] = color.g;
@@ -520,7 +524,7 @@ function createGalaxyComponent(type) {
     if (colors) {
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     }
-    
+
     // Variable sizes for stars
     if (type === 'stars' || type === 'bar' || type === 'halo') {
         geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
@@ -560,7 +564,7 @@ function createGalaxyComponent(type) {
                 gl_Position = projectionMatrix * mvPosition;
             }
         `;
-        
+
         const fragmentShader = `
             varying vec3 vColor;
             
@@ -576,7 +580,7 @@ function createGalaxyComponent(type) {
                 gl_FragColor = vec4(vColor * intensity, 1.0);
             }
         `;
-        
+
         material = new THREE.ShaderMaterial({
             uniforms: {},
             vertexShader: vertexShader,
@@ -608,77 +612,77 @@ function createGalaxyComponent(type) {
 // --- Function to create globular clusters ---
 function createGlobularClusters() {
     const clusters = [];
-    
+
     for (let c = 0; c < parameters.globularCount; c++) {
         // Cluster parameters
         const starCount = 150 + Math.floor(Math.random() * 250); // 150-400 stars
         const clusterRadius = parameters.globularRadius * (0.5 + Math.random());
-        
+
         // Position cluster in a spherical halo around the galaxy
         const phi = Math.random() * Math.PI * 2;
         const theta = Math.acos(Math.random() * 2 - 1);
-        
+
         // Distance from galactic center - using actual Milky Way distribution
         // Most globular clusters are 20-70 kpc from center
         const minDist = parameters.globularDistanceRange[0];
         const maxDist = parameters.globularDistanceRange[1];
         const r = minDist + Math.pow(Math.random(), 0.8) * (maxDist - minDist);
-        
+
         const clusterCenter = new THREE.Vector3(
             r * Math.sin(theta) * Math.cos(phi),
             r * Math.sin(theta) * Math.sin(phi) * 0.8, // Slightly flattened distribution
             r * Math.cos(theta)
         );
-        
+
         // Create cluster geometry
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(starCount * 3);
         const colors = new Float32Array(starCount * 3);
         const sizes = new Float32Array(starCount);
-        
+
         // Generate stars for this cluster
         for (let i = 0; i < starCount; i++) {
             const idx = i * 3;
-            
+
             // Use Plummer model for realistic globular cluster density distribution
             const rad = clusterRadius * Math.pow(Math.random(), -0.5);
             const phi_star = Math.random() * Math.PI * 2; // Renamed to avoid conflict with outer phi
             const theta_star = Math.acos(Math.random() * 2 - 1); // Renamed to avoid conflict
-            
+
             // Position relative to cluster center
             positions[idx] = clusterCenter.x + rad * Math.sin(theta_star) * Math.cos(phi_star);
-            positions[idx+1] = clusterCenter.y + rad * Math.sin(theta_star) * Math.sin(phi_star);
-            positions[idx+2] = clusterCenter.z + rad * Math.cos(theta_star);
-            
+            positions[idx + 1] = clusterCenter.y + rad * Math.sin(theta_star) * Math.sin(phi_star);
+            positions[idx + 2] = clusterCenter.z + rad * Math.cos(theta_star);
+
             // Globular clusters are mostly old, Population II stars
             const starType = Math.random() < 0.9 ? 'oldYellow' : 'oldRed';
             let color;
-            
+
             if (starType === 'oldYellow') {
                 color = parameters.starPopulations.oldYellow.clone();
             } else {
                 color = parameters.starPopulations.oldRed.clone();
             }
-            
+
             // Add slight color variation
             const variation = 0.05;
             color.r += (Math.random() - 0.5) * variation;
             color.g += (Math.random() - 0.5) * variation;
             color.b += (Math.random() - 0.5) * variation;
-            
+
             colors[idx] = color.r;
-            colors[idx+1] = color.g;
-            colors[idx+2] = color.b;
-            
+            colors[idx + 1] = color.g;
+            colors[idx + 2] = color.b;
+
             // Star sizes - central stars tend to be larger
             const sizeFactor = 0.5 + Math.random() * 0.5;
             sizes[i] = parameters.galaxySize * sizeFactor * 0.8;
         }
-        
+
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-        
+
         // Create shader material for cluster stars
         const material = new THREE.ShaderMaterial({
             uniforms: {},
@@ -711,12 +715,12 @@ function createGlobularClusters() {
             transparent: true,
             vertexColors: true
         });
-        
+
         const points = new THREE.Points(geometry, material);
         clusters.push(points);
         scene.add(points);
     }
-    
+
     return clusters;
 }
 
@@ -727,7 +731,7 @@ function createBackgroundStars() {
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
-    
+
     // Color palette based on stellar classification
     const colorPalette = [
         parameters.starPopulations.youngBlue,  // O-type, very rare
@@ -736,16 +740,16 @@ function createBackgroundStars() {
         parameters.starPopulations.orangeK,    // K-type
         parameters.starPopulations.redM        // M-type, most common
     ];
-    
-    // Weights reflect actual stellar distribution in our galaxy
-    const weights = [0.01, 0.05, 0.2, 0.3, 0.44];
-    
+
+    // Weights reflect actual stellar distribution in our galaxy (mostly red/orange)
+    const weights = [0.001, 0.01, 0.1, 0.2, 0.689]; // Heavily weighted towards M/K stars
+
     for (let i = 0; i < count; i++) {
         const idx = i * 3;
 
         // Distribute stars in a large sphere
         // Use a distance distribution that increases with radius^2 for uniform density
-        const r = Math.pow(Math.random(), 1/3) * parameters.backgroundSphereRadius;
+        const r = Math.pow(Math.random(), 1 / 3) * parameters.backgroundSphereRadius;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
 
@@ -757,7 +761,7 @@ function createBackgroundStars() {
         let colorIndex = 0;
         const rand = Math.random();
         let cumulativeWeight = 0;
-        
+
         for (let j = 0; j < weights.length; j++) {
             cumulativeWeight += weights[j];
             if (rand < cumulativeWeight) {
@@ -765,9 +769,9 @@ function createBackgroundStars() {
                 break;
             }
         }
-        
+
         const color = colorPalette[colorIndex].clone();
-        
+
         // Add slight brightness variation
         const brightnessFactor = 0.7 + Math.random() * 0.3;
         color.r *= brightnessFactor;
@@ -777,13 +781,13 @@ function createBackgroundStars() {
         colors[idx] = color.r;
         colors[idx + 1] = color.g;
         colors[idx + 2] = color.b;
-        
+
         // Size based on type - brighter stars are larger
         let sizeMultiplier;
         if (colorIndex === 0) sizeMultiplier = 1.3; // O-type, larger
         else if (colorIndex === 1) sizeMultiplier = 1.1; // A-type
         else sizeMultiplier = 0.8 + Math.random() * 0.4; // Others
-        
+
         sizes[i] = parameters.backgroundStarSize * sizeMultiplier;
     }
 
@@ -833,69 +837,69 @@ function createArmLabels() {
     // Clear any existing labels
     armLabels.forEach(label => scene.remove(label));
     armLabels = [];
-    
+
     if (!parameters.showLabels) return;
-    
+
     // Create a label for each spiral arm
     for (let i = 0; i < parameters.numArms; i++) {
         // Create text sprite with larger canvas for better text rendering
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = 640;  // MODIFIED: Increased width to prevent cutoff
-        canvas.height = 256; 
-        
+        canvas.height = 256;
+
         // Background with slight transparency
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         // Text with proper padding
-        context.font = 'bold 64px Arial'; 
+        context.font = 'bold 64px Arial';
         context.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color to reduce glow
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillText(parameters.armNames[i], canvas.width / 2, canvas.height / 2);
-        
+
         // Create sprite
         const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({ 
+        const material = new THREE.SpriteMaterial({
             map: texture,
             transparent: true,
             depthWrite: false
         });
-        
+
         const sprite = new THREE.Sprite(material);
-        
+
         // Position at a good point along the arm
         const armPhase = parameters.armPhaseOffset[i];
-        const radius = parameters.diskRadius * 0.7; 
+        const radius = parameters.diskRadius * 0.7;
         const angle = armPhase + (radius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness;
-        
+
         sprite.position.set(
             Math.cos(angle) * radius,
-            8, 
+            8,
             Math.sin(angle) * radius
         );
-        
+
         // Adjusted scale for the larger canvas but similar visual size
         // Consider adjusting these values if labels appear too large or small after canvas width change
-        const adjustedScaleWidth = (canvas.width / 512) * 14 * parameters.labelScale; 
+        const adjustedScaleWidth = (canvas.width / 512) * 14 * parameters.labelScale;
         const adjustedScaleHeight = (canvas.height / 256) * 7 * parameters.labelScale;
         sprite.scale.set(adjustedScaleWidth, adjustedScaleHeight, 1);
 
         armLabels.push(sprite);
         scene.add(sprite);
     }
-    
+
     // Add Local Arm label if enabled
     if (parameters.localArmEnabled) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = 640; // MODIFIED: Increased width
         canvas.height = 256;
-        
+
         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         context.font = 'bold 56px Arial';
         context.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color
         context.textAlign = 'center';
@@ -903,85 +907,85 @@ function createArmLabels() {
         context.fillText('Orion Arm', canvas.width / 2, canvas.height / 2 - 20);
         context.font = '36px Arial';
         context.fillText('(Local Arm)', canvas.width / 2, canvas.height / 2 + 40);
-        
+
         const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({ 
+        const material = new THREE.SpriteMaterial({
             map: texture,
             transparent: true,
             depthWrite: false
         });
-        
+
         const sprite = new THREE.Sprite(material);
-        
+
         // Position at the middle of the local arm
         const armPhase = parameters.localArmPhaseOffset;
-        const radius = parameters.diskRadius * 0.5; 
+        const radius = parameters.diskRadius * 0.5;
         const angle = armPhase + (radius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness;
-        
+
         sprite.position.set(
             Math.cos(angle) * radius,
-            7, 
+            7,
             Math.sin(angle) * radius
         );
-        
+
         const adjustedScaleWidth = (canvas.width / 512) * 14 * parameters.labelScale;
         const adjustedScaleHeight = (canvas.height / 256) * 7 * parameters.labelScale;
         sprite.scale.set(adjustedScaleWidth, adjustedScaleHeight, 1);
         armLabels.push(sprite);
         scene.add(sprite);
     }
-    
+
     // Add Sun position marker (text label)
     const sunTextCanvas = document.createElement('canvas'); // Renamed to avoid conflict
     const sunTextContext = sunTextCanvas.getContext('2d'); // Renamed to avoid conflict
-    sunTextCanvas.width = 256; 
+    sunTextCanvas.width = 256;
     sunTextCanvas.height = 256;
-    
+
     sunTextContext.fillStyle = 'rgba(0, 0, 0, 0.7)';
     sunTextContext.fillRect(0, 0, sunTextCanvas.width, sunTextCanvas.height);
-    
+
     sunTextContext.font = 'bold 48px Arial';
     sunTextContext.fillStyle = '#DCDC00'; // MODIFIED: Less bright yellow to reduce glow
     sunTextContext.textAlign = 'center';
     sunTextContext.textBaseline = 'middle';
     sunTextContext.fillText('Sun', sunTextCanvas.width / 2, sunTextCanvas.height / 2);
-    
+
     const sunTexture = new THREE.CanvasTexture(sunTextCanvas); // Use renamed canvas
     const sunLabelMaterial = new THREE.SpriteMaterial({  // Renamed to avoid conflict
         map: sunTexture,
         transparent: true,
         depthWrite: false
     });
-    
+
     const sunSprite = new THREE.Sprite(sunLabelMaterial); // Renamed to avoid conflict
-    
+
     const sunRadius = parameters.diskRadius * 0.55;
     const sunAngle = parameters.localArmPhaseOffset + (sunRadius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2;
-    
+
     sunSprite.position.set(
         Math.cos(sunAngle) * sunRadius,
-        2, 
+        2,
         Math.sin(sunAngle) * sunRadius
     );
-    
+
     sunSprite.scale.set(7 * parameters.labelScale, 7 * parameters.labelScale, 1);
     armLabels.push(sunSprite);
     scene.add(sunSprite);
-    
+
     // Create actual visible Sun marker with glow
-    const sunGeometry = new THREE.SphereGeometry(0.8, 16, 16); 
-    const sunMaterial = new THREE.MeshBasicMaterial({ 
-        color: 0xffffaa, 
+    const sunGeometry = new THREE.SphereGeometry(0.8, 16, 16);
+    const sunMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffaa,
         emissive: 0xffffaa,
         emissiveIntensity: 3
     });
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     sunMesh.position.set(
         Math.cos(sunAngle) * sunRadius,
-        0, 
+        0,
         Math.sin(sunAngle) * sunRadius
     );
-    
+
     const sunGlowGeometry = new THREE.SphereGeometry(1.5, 16, 16);
     const sunGlowMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffdd,
@@ -991,19 +995,19 @@ function createArmLabels() {
     });
     const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
     sunMesh.add(sunGlow);
-    
+
     armLabels.push(sunMesh);
     scene.add(sunMesh);
-    
+
     // Add a central core label
     const coreCanvas = document.createElement('canvas');
     const coreContext = coreCanvas.getContext('2d');
     coreCanvas.width = 640; // MODIFIED: Increased width
     coreCanvas.height = 256;
-    
+
     coreContext.fillStyle = 'rgba(0, 0, 0, 0.7)';
     coreContext.fillRect(0, 0, coreCanvas.width, coreCanvas.height);
-    
+
     coreContext.font = 'bold 56px Arial';
     coreContext.fillStyle = '#CCCCCC'; // MODIFIED: Less bright color
     coreContext.textAlign = 'center';
@@ -1011,17 +1015,17 @@ function createArmLabels() {
     coreContext.fillText('Galactic Center', coreCanvas.width / 2, coreCanvas.height / 2 - 20);
     coreContext.font = '36px Arial';
     coreContext.fillText('Sagittarius A*', coreCanvas.width / 2, coreCanvas.height / 2 + 40);
-    
+
     const coreTexture = new THREE.CanvasTexture(coreCanvas);
-    const coreMaterial = new THREE.SpriteMaterial({ 
+    const coreMaterial = new THREE.SpriteMaterial({
         map: coreTexture,
         transparent: true,
         depthWrite: false
     });
-    
+
     const coreSprite = new THREE.Sprite(coreMaterial);
-    coreSprite.position.set(0, 12, 0); 
-    
+    coreSprite.position.set(0, 12, 0);
+
     const adjustedCoreScaleWidth = (coreCanvas.width / 512) * 15 * parameters.labelScale;
     const adjustedCoreScaleHeight = (coreCanvas.height / 256) * 7.5 * parameters.labelScale;
     coreSprite.scale.set(adjustedCoreScaleWidth, adjustedCoreScaleHeight, 1);
@@ -1039,7 +1043,7 @@ function createGalacticPlane() {
     gridHelper.material.transparent = true;
     gridHelper.material.opacity = 0.1;
     scene.add(gridHelper);
-    
+
     return gridHelper;
 }
 
@@ -1068,11 +1072,11 @@ function generateSimulation() {
     disposeObject(dustPoints);
     disposeObject(haloPoints);
     disposeObject(backgroundStarsPoints);
-    
+
     // Clear globular clusters
     globularClusters.forEach(cluster => disposeObject(cluster));
     globularClusters = [];
-    
+
     // Clear arm labels
     armLabels.forEach(label => scene.remove(label));
     armLabels = [];
@@ -1086,7 +1090,7 @@ function generateSimulation() {
         scene.add(galaxyPoints);
         console.log("Stars added:", parameters.galaxyParticleCount);
     }
-    
+
     // Create bar component
     const barComp = createGalaxyComponent('bar');
     if (barComp) {
@@ -1116,7 +1120,7 @@ function generateSimulation() {
         scene.add(haloPoints);
         console.log("Halo added:", parameters.haloParticleCount);
     }
-    
+
     // Create globular clusters if enabled
     if (parameters.globularClusters) {
         globularClusters = createGlobularClusters();
@@ -1132,10 +1136,10 @@ function generateSimulation() {
         scene.add(backgroundStarsPoints);
         console.log("Background added:", parameters.backgroundStarCount);
     }
-    
+
     // Create educational labels
     createArmLabels();
-    
+
     // Create galactic plane reference
     if (galacticPlane) { // Dispose old one if exists
         scene.remove(galacticPlane);
@@ -1143,7 +1147,7 @@ function generateSimulation() {
         galacticPlane.material.dispose();
     }
     galacticPlane = createGalacticPlane();
-    
+
     console.log("Generation Complete.");
 }
 
@@ -1151,9 +1155,9 @@ function generateSimulation() {
 const renderScene = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.0,    // Bloom strength 
-    0.7,    // Bloom radius 
-    0.65    // Bloom threshold 
+    1.5,    // Bloom strength (increased for reference image glow)
+    0.8,    // Bloom radius (increased for better spread)
+    0.55    // Bloom threshold (lower to catch more bright areas)
 );
 
 // Add FXAA for smoother stars
@@ -1171,11 +1175,11 @@ window.addEventListener('resize', () => {
     // Update camera
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    
+
     // Update renderer and composer
     renderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
-    
+
     // Update FXAA resolution
     fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * window.devicePixelRatio);
     fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * window.devicePixelRatio);
@@ -1218,9 +1222,9 @@ function startGuidedTour() {
         {
             position: { x: 30, y: 10, z: 10 }, // Positioned closer to the Sun
             target: { // Look towards the Sun's approximate location for context
-                x: parameters.diskRadius * 0.55 * Math.cos(parameters.localArmPhaseOffset + (parameters.diskRadius*0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2), 
-                y: 0, 
-                z: parameters.diskRadius * 0.55 * Math.sin(parameters.localArmPhaseOffset + (parameters.diskRadius*0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2)
+                x: parameters.diskRadius * 0.55 * Math.cos(parameters.localArmPhaseOffset + (parameters.diskRadius * 0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2),
+                y: 0,
+                z: parameters.diskRadius * 0.55 * Math.sin(parameters.localArmPhaseOffset + (parameters.diskRadius * 0.55 / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2)
             },
             message: "Our Sun is located about 27,000 light-years from the galactic center, in a smaller feature called the Orion Arm (or Local Arm)."
         },
@@ -1230,7 +1234,7 @@ function startGuidedTour() {
             message: "This concludes our tour. Feel free to explore the galaxy using the controls provided."
         }
     ];
-    
+
     const tourMessageDiv = document.getElementById('tourMessage');
     const tourMessageContent = document.getElementById('tourMessageContent');
     const prevStepButton = document.getElementById('prevStep');
@@ -1243,22 +1247,22 @@ function startGuidedTour() {
         if (prevStepButton) prevStepButton.disabled = (tourStep === 0);
         if (nextStepButton) nextStepButton.disabled = (tourStep === tourSteps.length - 1);
     }
-    
+
     function goToTourStep(step) {
         tourStep = step;
         const currentStep = tourSteps[step];
-        
+
         if (typeof gsap !== 'undefined') {
             gsap.to(camera.position, {
                 x: currentStep.position.x,
                 y: currentStep.position.y,
                 z: currentStep.position.z,
                 duration: 2,
-                onUpdate: function() {
+                onUpdate: function () {
                     controls.target.set(currentStep.target.x, currentStep.target.y, currentStep.target.z);
                     camera.lookAt(currentStep.target.x, currentStep.target.y, currentStep.target.z);
                 },
-                onComplete: function() {
+                onComplete: function () {
                     controls.target.set(currentStep.target.x, currentStep.target.y, currentStep.target.z);
                     camera.lookAt(currentStep.target.x, currentStep.target.y, currentStep.target.z);
                     controls.update(); // Ensure controls internal state is updated
@@ -1273,7 +1277,7 @@ function startGuidedTour() {
             showTourMessage(currentStep.message);
         }
     }
-    
+
     if (prevStepButton) {
         prevStepButton.onclick = () => { // Use onclick for simplicity or manage event listeners carefully
             if (tourStep > 0) goToTourStep(tourStep - 1);
@@ -1289,7 +1293,7 @@ function startGuidedTour() {
             tourMessageDiv.style.display = 'none';
         };
     }
-    
+
     // Start tour
     goToTourStep(tourStep);
 }
@@ -1306,13 +1310,13 @@ function animate() {
         if (barPoints) barPoints.rotation.y += delta;
         if (dustPoints) dustPoints.rotation.y += delta;
         if (haloPoints) haloPoints.rotation.y += delta;
-        
+
         if (globularClusters.length > 0) {
             globularClusters.forEach(cluster => {
-                cluster.rotation.y += delta * 0.5; 
+                cluster.rotation.y += delta * 0.5;
             });
         }
-        
+
         // Labels should NOT rotate with the galaxy components if they are world-space billboards
         // However, if their positions are relative to a rotating object and you want them to maintain that relative position,
         // their positions would need to be updated, or they'd need to be parented to the rotating object.
@@ -1331,7 +1335,7 @@ function animate() {
 
     controls.update();
     composer.render();
-    
+
     // Update camera distance display
     const camDistEl = document.getElementById('cameraDistance');
     if (camDistEl) {
@@ -1340,44 +1344,43 @@ function animate() {
 }
 
 // --- Set up Event Listeners ---
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Label toggle
     const labelToggle = document.getElementById('labelToggle');
     if (labelToggle) {
-        labelToggle.addEventListener('change', function() {
+        labelToggle.addEventListener('change', function () {
             parameters.showLabels = this.checked;
             armLabels.forEach(label => {
                 label.visible = this.checked;
             });
         });
     }
-    
+
     // Rotation toggle
     const rotationToggle = document.getElementById('rotationToggle');
     if (rotationToggle) {
-        rotationToggle.addEventListener('change', function() {
+        rotationToggle.addEventListener('change', function () {
             rotationEnabled = this.checked;
         });
     }
-    
+
     // Grid toggle
     const gridToggle = document.getElementById('gridToggle');
     if (gridToggle) {
-        gridToggle.addEventListener('change', function() {
+        gridToggle.addEventListener('change', function () {
             if (galacticPlane) galacticPlane.visible = this.checked;
         });
     }
-    
+
     // View selection
     const viewSelection = document.getElementById('viewSelection');
     if (viewSelection) {
-        viewSelection.addEventListener('change', function() {
+        viewSelection.addEventListener('change', function () {
             const view = this.value;
-            let targetPosition = {x: 0, y:0, z:0}; // Default target
-
+            let targetPosition = { x: 0, y: 0, z: 0 };
             let newCamPos = {};
-            
-            switch(view) {
+
+            switch (view) {
                 case 'top':
                     newCamPos = { x: 0, y: 150, z: 0 };
                     break;
@@ -1386,27 +1389,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                 case 'sunperspective':
                     const sunRadius = parameters.diskRadius * 0.55;
-                    const sunAngle = parameters.localArmPhaseOffset + 
+                    const sunAngle = parameters.localArmPhaseOffset +
                         (sunRadius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness - 0.2;
                     const sunX = Math.cos(sunAngle) * sunRadius;
                     const sunZ = Math.sin(sunAngle) * sunRadius;
                     newCamPos = { x: sunX, y: 1, z: sunZ };
-                    // For sun perspective, maybe look towards galactic center
-                    // targetPosition = {x: 0, y: 0, z: 0 }; // This is already default
                     break;
-                default: // 'default' view
+                default:
                     newCamPos = { x: 0, y: 90, z: 100 };
             }
 
             if (typeof gsap !== 'undefined') {
-                gsap.to(camera.position, { 
+                gsap.to(camera.position, {
                     ...newCamPos,
                     duration: 2,
-                    onUpdate: function() { 
+                    onUpdate: function () {
                         controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
                         camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
                     },
-                    onComplete: function() {
+                    onComplete: function () {
                         controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
                         camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
                         controls.update();
@@ -1420,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Tour button
     const tourButton = document.getElementById('tourButton');
     if (tourButton) {
@@ -1428,8 +1429,68 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// --- Marker Function ---
+function createMarker() {
+    // Calculate Sun's position
+    const sunRadius = parameters.diskRadius * 0.55;
+    // Adjust angle calculation to match the new arm parameters
+    // We want the sun in the "Orion Arm" spur
+    const sunAngle = parameters.localArmPhaseOffset +
+        (sunRadius / parameters.diskRadius) * parameters.armWindingFactor / parameters.armTightness;
+
+    const sunX = Math.cos(sunAngle) * sunRadius;
+    const sunZ = Math.sin(sunAngle) * sunRadius;
+    const sunY = 0;
+
+    const markerGroup = new THREE.Group();
+    markerGroup.position.set(sunX, sunY, sunZ);
+
+    // 1. The Circle (Ring)
+    const ringGeometry = new THREE.RingGeometry(1.5, 1.8, 32);
+    const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+    ring.rotation.x = -Math.PI / 2; // Lay flat on galactic plane
+    markerGroup.add(ring);
+
+    // 2. The Text Label "We are here"
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 256;
+    canvas.height = 64;
+    context.font = 'Bold 40px Arial';
+    context.fillStyle = '#ffaa00'; // Orange-ish gold color
+    context.textAlign = 'center';
+    context.fillText('We are here', 128, 48);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.position.set(-5, 0, 0); // Offset to the left of the ring
+    sprite.scale.set(10, 2.5, 1);
+    markerGroup.add(sprite);
+
+    // 3. Line connecting text to ring
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-1.8, 0, 0), // Edge of ring
+        new THREE.Vector3(-2.5, 0, 0)  // Towards text
+    ]);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const line = new THREE.Line(lineGeometry, lineMaterial);
+    markerGroup.add(line);
+
+    scene.add(markerGroup);
+
+    // Make marker look at camera (billboard effect for text, but ring stays flat?)
+    // Actually, the reference image shows the text flat or facing camera? 
+    // Usually text faces camera. The ring is flat on the plane.
+    // We'll let the sprite face the camera automatically.
+
+    return markerGroup;
+}
+
 // --- Initialize the simulation ---
 generateSimulation();
+createMarker(); // Add the marker
 animate();
 
 // --- Optional: Debug GUI ---

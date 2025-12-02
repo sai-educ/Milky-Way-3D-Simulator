@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Milky Way Simulation</title>
     <style>
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            background-color: #000; 
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
             font-family: Arial, sans-serif;
         }
-        canvas { display: block; }
-        
+
+        canvas {
+            display: block;
+        }
+
         #info {
             position: absolute;
             top: 10px;
@@ -23,7 +27,7 @@
             display: block;
             pointer-events: none;
         }
-        
+
         #loading {
             position: fixed;
             top: 0;
@@ -39,7 +43,7 @@
             color: white;
             font-size: 24px;
         }
-        
+
         .spinner {
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -49,12 +53,17 @@
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         #credits {
             position: absolute;
             bottom: 5px;
@@ -63,7 +72,7 @@
             font-size: 12px;
             text-align: right;
         }
-        
+
         #controls {
             position: absolute;
             top: 10px;
@@ -75,15 +84,15 @@
             font-family: Arial, sans-serif;
             z-index: 200;
         }
-        
+
         #controls div {
             margin-bottom: 8px;
         }
-        
+
         #infoPanel {
             position: absolute;
             bottom: 10px;
-            left: 10px; /* MODIFIED: Was 'right: 10px;' */
+            left: 10px;
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 5px;
@@ -92,10 +101,10 @@
             text-align: left;
             z-index: 200;
         }
-        
+
         button {
             padding: 8px 15px;
-            background: #4169E1; /* Royal blue button to match image colors */
+            background: #4169E1;
             color: white;
             border: none;
             border-radius: 4px;
@@ -103,11 +112,11 @@
             transition: background 0.3s;
             margin-top: 5px;
         }
-        
+
         button:hover {
-            background: #1E40AF; /* Darker blue on hover */
+            background: #1E40AF;
         }
-        
+
         select {
             padding: 5px;
             border-radius: 4px;
@@ -116,11 +125,11 @@
             border: 1px solid #555;
             margin-top: 3px;
         }
-        
+
         #tourMessage {
-            display: none; /* Initially hidden */
+            display: none;
             position: absolute;
-            bottom: 60px; /* Adjusted to not overlap infoPanel too much */
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.85);
@@ -143,24 +152,27 @@
         #tourMessageNav button {
             margin: 0 5px;
         }
-        
-        /* Responsive adjustments */
+
         @media (max-width: 768px) {
-            #controls, #infoPanel {
+
+            #controls,
+            #infoPanel {
                 width: auto;
-                max-width: calc(100% - 20px); /* Ensure padding within viewport */
+                max-width: calc(100% - 20px);
                 font-size: 13px;
             }
-            #infoPanel{
+
+            #infoPanel {
                 bottom: 10px;
                 left: 10px;
-                /* width: calc(100% - 20px); Ensure it doesn't overflow */
             }
-            
-            button, select {
+
+            button,
+            select {
                 font-size: 13px;
                 padding: 6px 10px;
             }
+
             #tourMessage {
                 font-size: 14px;
                 bottom: 20px;
@@ -169,21 +181,22 @@
         }
     </style>
 </head>
+
 <body>
     <div id="info">Enhanced Milky Way Galaxy Simulation</div>
-    
+
     <div id="loading">
         <div class="spinner"></div>
         <div>Generating Milky Way Simulation...</div>
-        <div style="font-size: 16px; margin-top: 10px;">Rendering 500,000+ stars, please wait</div>
+        <div style="font-size: 16px; margin-top: 10px;">Rendering 200,000+ stars, please wait</div>
     </div>
-    
+
     <div id="controls">
         <div><label><input type="checkbox" id="labelToggle" checked> Show Labels</label></div>
         <div><label><input type="checkbox" id="rotationToggle" checked> Enable Rotation</label></div>
         <div><label><input type="checkbox" id="gridToggle" checked> Show Galactic Plane</label></div>
         <div>
-            View: 
+            View:
             <select id="viewSelection">
                 <option value="default">Default</option>
                 <option value="top">Top-Down</option>
@@ -193,7 +206,7 @@
         </div>
         <button id="tourButton">Start Guided Tour</button>
     </div>
-    
+
     <div id="infoPanel">
         <h3 style="margin-top: 0;">Milky Way Galaxy</h3>
         <div>Type: Barred Spiral (SBc)</div>
@@ -212,14 +225,14 @@
             <button id="endTour" style="margin-left: 15px;">End Tour</button>
         </div>
     </div>
-    
+
     <div id="credits">
         Enhanced Milky Way Simulation<br>
         Based on scientific data from NASA/ESA
     </div>
-    
+
     <canvas id="galaxyCanvas"></canvas>
-    
+
     <script type="importmap">
         {
             "imports": {
@@ -228,26 +241,23 @@
             }
         }
     </script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    
     <script type="module" src="script.js"></script>
-    
+
     <script>
-        // Remove loading screen when simulation is ready
-        window.addEventListener('load', function() {
-            // Fallback for loading screen removal in case the simulation takes too long or fails to trigger a specific "ready" event.
-            // A more robust solution would be to have an event from script.js indicating completion.
+        window.addEventListener('load', function () {
             const loadingScreen = document.getElementById('loading');
             if (loadingScreen) {
-                setTimeout(function() {
+                setTimeout(function () {
                     loadingScreen.style.opacity = 0;
-                    setTimeout(function() {
+                    setTimeout(function () {
                         loadingScreen.style.display = 'none';
-                    }, 1000); // Wait for opacity transition to finish
-                }, 3000); // Adjust timeout as needed
+                    }, 1000);
+                }, 3000);
             }
         });
     </script>
 </body>
+
 </html>
