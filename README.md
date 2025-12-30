@@ -2,10 +2,11 @@
 
 ![Milky Way Simulation GIF](placeholder_link_to_your_gif.gif) A stunning interactive 3D visualization of the Milky Way galaxy, built with `three.js`. Explore the vastness of our galaxy, from the bright core to the faint outer halo.
 
-Visual: Animated screenshot (GIF):
+Visual:
 
 
-![Screen Recording 2025-05-02 at 1 26 05 PM](https://github.com/user-attachments/assets/fadc7ab2-4bbc-4ced-bad7-035e7e6588b0)
+https://github.com/user-attachments/assets/e2ffcd32-d2a9-4a59-af91-a88fa1338126
+
 
 
 ** Experience the simulation live at: [milky-way-3-d-simulator.vercel.app](https://milky-way-3-d-simulator.vercel.app/)
