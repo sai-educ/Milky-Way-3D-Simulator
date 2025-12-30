@@ -1,0 +1,76 @@
+::ffff:127.0.0.1 - - [30/Dec/2025 16:24:31] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:24:31] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:24:32] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:24:32] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:27] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:27] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:28] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:28] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:39] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:39] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:39] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:28:39] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:30:28] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:30:28] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:30:29] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:30:29] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:26] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:26] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:27] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:27] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:31] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:31] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:32] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:31:32] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:10] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:10] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:11] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:11] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:42] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:42] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:42] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:32:42] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:33:02] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:33:02] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:33:02] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:33:02] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:05] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:05] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:06] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:06] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:43] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:43] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:43] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:37:43] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:24] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:24] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:24] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:24] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:28] "GET / HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:28] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:29] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:39:29] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:42:05] "GET / HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:42:05] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:42:06] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:42:06] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:43:31] "GET / HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:43:31] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:43:31] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:43:31] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:46:34] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:46:34] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:46:35] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:46:35] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:47:07] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:47:07] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:47:07] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:47:07] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:03] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:03] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:03] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:03] "GET /favicon.ico HTTP/1.1" 404 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:50] "GET / HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:50] "GET /script.js HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:50] code 404, message File not found
+::ffff:127.0.0.1 - - [30/Dec/2025 16:49:50] "GET /favicon.ico HTTP/1.1" 404 -
