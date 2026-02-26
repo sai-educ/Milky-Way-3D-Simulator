@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 
 // =============================================================================
 // MILKY WAY CONFIGURATION
@@ -148,6 +149,63 @@ const config = {
     }
 };
 
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+const isLikelyMobile = isTouchDevice || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(navigator.userAgent);
+const isLowPowerDevice = Boolean(
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    (navigator.deviceMemory && navigator.deviceMemory <= 4)
+);
+
+const performanceProfile = isLikelyMobile || isLowPowerDevice
+    ? {
+        particleScale: 0.44,
+        gasSizeScale: 0.8,
+        maxPixelRatio: 1.1,
+        initialRenderScale: 0.86,
+        minRenderScale: 0.55,
+        adaptiveResolution: true,
+        targetFrameMs: 1000 / 45,
+        bloomStrength: 1.3,
+        bloomRadius: 0.65,
+        bloomThreshold: 0.16,
+        toneMappingExposure: 1.0,
+        backgroundBlurriness: 0.22
+    }
+    : {
+        particleScale: 0.78,
+        gasSizeScale: 1.0,
+        maxPixelRatio: 1.6,
+        initialRenderScale: 1.0,
+        minRenderScale: 0.72,
+        adaptiveResolution: true,
+        targetFrameMs: 1000 / 60,
+        bloomStrength: 2.1,
+        bloomRadius: 0.95,
+        bloomThreshold: 0.09,
+        toneMappingExposure: 1.05,
+        backgroundBlurriness: 0.1
+    };
+
+function scaledCount(value, minimum = 800) {
+    return Math.max(minimum, Math.floor(value * performanceProfile.particleScale));
+}
+
+config.core.count = scaledCount(config.core.count);
+config.bar.count = scaledCount(config.bar.count);
+config.bulge.count = scaledCount(config.bulge.count);
+config.arms.starCount = scaledCount(config.arms.starCount);
+config.nebulae.count = scaledCount(config.nebulae.count);
+config.dust.count = scaledCount(config.dust.count);
+config.disk.count = scaledCount(config.disk.count);
+config.background.starCount = scaledCount(config.background.starCount);
+
+config.gasLayers = config.gasLayers.map((layer) => ({
+    ...layer,
+    count: scaledCount(layer.count),
+    sizeMin: layer.sizeMin * performanceProfile.gasSizeScale,
+    sizeMax: layer.sizeMax * performanceProfile.gasSizeScale
+}));
+
 // =============================================================================
 // RENDERER SETUP
 // =============================================================================
@@ -161,8 +219,12 @@ const renderer = new THREE.WebGLRenderer({
     alpha: false
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(1);
 renderer.setClearColor(0x000000, 1);  // PITCH BLACK
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = performanceProfile.toneMappingExposure;
+renderer.dithering = true;
 
 const camera = new THREE.PerspectiveCamera(
     55,
@@ -176,8 +238,13 @@ camera.lookAt(0, 0, 0);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+controls.enablePan = false;
 controls.minDistance = 20;
 controls.maxDistance = 600;
+controls.rotateSpeed = isLikelyMobile ? 0.6 : 0.85;
+controls.zoomSpeed = isLikelyMobile ? 0.72 : 1;
+controls.touches.ONE = THREE.TOUCH.ROTATE;
+controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
 
 // =============================================================================
 // SHADERS
@@ -317,6 +384,66 @@ function lerpColor(color1, color2, t) {
 function inverseSpiralTheta(r, a, b) {
     return Math.log(r / a) / b;
 }
+
+const FAST_HDR_URL = 'https://cdn.needle.tools/static/hdris/studio_small_09_2k.pmrem.ktx2';
+
+function createFallbackBackgroundTexture() {
+    const gradientCanvas = document.createElement('canvas');
+    gradientCanvas.width = 512;
+    gradientCanvas.height = 256;
+    const ctx = gradientCanvas.getContext('2d');
+
+    if (!ctx) return null;
+
+    const baseGradient = ctx.createLinearGradient(0, 0, 0, gradientCanvas.height);
+    baseGradient.addColorStop(0, '#050912');
+    baseGradient.addColorStop(0.35, '#030611');
+    baseGradient.addColorStop(1, '#000000');
+
+    ctx.fillStyle = baseGradient;
+    ctx.fillRect(0, 0, gradientCanvas.width, gradientCanvas.height);
+
+    const blueNebula = ctx.createRadialGradient(350, 80, 20, 350, 80, 220);
+    blueNebula.addColorStop(0, 'rgba(68, 136, 216, 0.24)');
+    blueNebula.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = blueNebula;
+    ctx.fillRect(0, 0, gradientCanvas.width, gradientCanvas.height);
+
+    const texture = new THREE.CanvasTexture(gradientCanvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.needsUpdate = true;
+    return texture;
+}
+
+const fallbackBackgroundTexture = createFallbackBackgroundTexture();
+if (fallbackBackgroundTexture) {
+    scene.background = fallbackBackgroundTexture;
+    scene.environment = fallbackBackgroundTexture;
+    scene.backgroundBlurriness = performanceProfile.backgroundBlurriness;
+}
+
+function loadFastHDRBackground() {
+    const ktx2Loader = new KTX2Loader()
+        .setTranscoderPath('https://unpkg.com/three@0.153.0/examples/jsm/libs/basis/')
+        .detectSupport(renderer);
+
+    ktx2Loader.load(
+        FAST_HDR_URL,
+        (texture) => {
+            texture.mapping = THREE.CubeUVReflectionMapping;
+            scene.environment = texture;
+            scene.background = texture;
+            scene.backgroundBlurriness = performanceProfile.backgroundBlurriness;
+        },
+        undefined,
+        () => {
+            // Keep procedural background fallback if Fast HDR is unavailable.
+        }
+    );
+}
+
+loadFastHDRBackground();
 
 // =============================================================================
 // BACKGROUND STARS
@@ -736,7 +863,9 @@ const gas = createPointSystem(gasData, gasMaterial);
 const stars = createPointSystem(starData, starMaterial);
 const dust = createPointSystem(dustData, dustMaterial);
 
-// Render order: background first, then gas halo, then stars, then dust
+backgroundStars.frustumCulled = false;
+
+// Render order: background first, then galaxy body layers.
 backgroundStars.renderOrder = -1;
 gas.renderOrder = 0;
 stars.renderOrder = 1;
@@ -756,20 +885,83 @@ composer.addPass(renderPass);
 
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.5,
-    0.8,
-    0.1
+    performanceProfile.bloomStrength,
+    performanceProfile.bloomRadius,
+    performanceProfile.bloomThreshold
 );
-bloomPass.strength = 2.2;
-bloomPass.radius = 1.1;
-bloomPass.threshold = 0.08;
+bloomPass.strength = performanceProfile.bloomStrength;
+bloomPass.radius = performanceProfile.bloomRadius;
+bloomPass.threshold = performanceProfile.bloomThreshold;
 composer.addPass(bloomPass);
+
+const renderState = {
+    renderScale: performanceProfile.initialRenderScale,
+    frameTimeEMA: performanceProfile.targetFrameMs,
+    adjustTimer: 0,
+    appliedPixelRatio: 0
+};
+
+function applyRenderScale(scale) {
+    const clampedScale = THREE.MathUtils.clamp(scale, performanceProfile.minRenderScale, 1);
+    renderState.renderScale = clampedScale;
+
+    const targetPixelRatio = Math.min(window.devicePixelRatio, performanceProfile.maxPixelRatio) * clampedScale;
+    if (Math.abs(targetPixelRatio - renderState.appliedPixelRatio) < 0.02) return;
+
+    renderState.appliedPixelRatio = targetPixelRatio;
+    renderer.setPixelRatio(targetPixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    composer.setPixelRatio(targetPixelRatio);
+    composer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function updateAdaptiveResolution(deltaSeconds) {
+    if (!performanceProfile.adaptiveResolution) return;
+
+    const frameTimeMs = deltaSeconds * 1000;
+    renderState.frameTimeEMA = lerp(renderState.frameTimeEMA, frameTimeMs, 0.08);
+    renderState.adjustTimer += deltaSeconds;
+
+    if (renderState.adjustTimer < 1.25) return;
+
+    const tooSlowThreshold = performanceProfile.targetFrameMs * 1.2;
+    const fastThreshold = performanceProfile.targetFrameMs * 0.82;
+
+    let nextScale = renderState.renderScale;
+    if (renderState.frameTimeEMA > tooSlowThreshold) {
+        nextScale -= 0.08;
+    } else if (renderState.frameTimeEMA < fastThreshold) {
+        nextScale += 0.04;
+    }
+
+    nextScale = THREE.MathUtils.clamp(nextScale, performanceProfile.minRenderScale, 1);
+    if (Math.abs(nextScale - renderState.renderScale) >= 0.03) {
+        applyRenderScale(nextScale);
+    }
+
+    if (
+        renderState.frameTimeEMA > tooSlowThreshold * 1.15 &&
+        renderState.renderScale <= performanceProfile.minRenderScale + 0.02
+    ) {
+        bloomPass.enabled = false;
+    } else if (
+        renderState.frameTimeEMA < fastThreshold &&
+        renderState.renderScale >= performanceProfile.initialRenderScale - 0.05
+    ) {
+        bloomPass.enabled = true;
+    }
+
+    renderState.adjustTimer = 0;
+}
+
+applyRenderScale(performanceProfile.initialRenderScale);
 
 // =============================================================================
 // ANIMATION
 // =============================================================================
 const clock = new THREE.Clock();
 let time = 0;
+let readyEventSent = false;
 
 function startExpansion() {
     let startTime = null;
@@ -795,13 +987,19 @@ startExpansion();
 function animate() {
     requestAnimationFrame(animate);
 
-    const delta = clock.getDelta();
+    const delta = Math.min(clock.getDelta(), 0.1);
     time += delta * config.physics.rotationSpeed * 1000;
 
     uniforms.uTime.value = time;
     controls.update();
+    updateAdaptiveResolution(delta);
 
     composer.render();
+
+    if (!readyEventSent) {
+        readyEventSent = true;
+        window.dispatchEvent(new Event('galaxy-ready'));
+    }
 }
 
 // =============================================================================
@@ -810,8 +1008,7 @@ function animate() {
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
+    applyRenderScale(renderState.renderScale);
 });
 
 animate();

@@ -7,6 +7,8 @@
     <title>Milky Way Galaxy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.needle.tools" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
     <style>
         * {
@@ -18,12 +20,17 @@
         body {
             overflow: hidden;
             background-color: #000;
+            font-family: 'Open Sans', sans-serif;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         canvas {
+            position: fixed;
+            inset: 0;
             display: block;
             width: 100vw;
             height: 100vh;
+            touch-action: none;
         }
 
         #loading {
@@ -55,14 +62,19 @@
             100% { transform: rotate(360deg); }
         }
 
+        #hud {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+
         #info {
             position: fixed;
             top: 24px;
             left: 24px;
-            font-family: 'Open Sans', sans-serif;
             color: rgba(255, 255, 255, 0.7);
             pointer-events: none;
-            z-index: 100;
         }
 
         #info h1 {
@@ -77,13 +89,23 @@
             font-weight: 300;
             color: rgba(255, 255, 255, 0.45);
         }
+
+        @media (max-width: 900px) {
+            #info {
+                top: 16px;
+                left: 16px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div id="info">
-        <h1>Milky Way Galaxy 3D</h1>
-        <p>drag to rotate | scroll to zoom</p>
+    <div id="hud">
+        <div id="info">
+            <h1>Milky Way Galaxy 3D</h1>
+            <p>drag/touch to rotate | scroll/pinch to zoom</p>
+        </div>
+
     </div>
 
     <div id="loading">
@@ -104,17 +126,26 @@
     <script type="module" src="script.js"></script>
 
     <script>
-        window.addEventListener('load', function () {
+        (function () {
             const loadingScreen = document.getElementById('loading');
-            if (loadingScreen) {
+            if (!loadingScreen) return;
+
+            let hidden = false;
+            const hideLoading = function () {
+                if (hidden) return;
+                hidden = true;
+
+                loadingScreen.style.opacity = '0';
                 setTimeout(function () {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(function () {
-                        loadingScreen.style.display = 'none';
-                    }, 1500);
-                }, 2500);
-            }
-        });
+                    loadingScreen.style.display = 'none';
+                }, 600);
+            };
+
+            window.addEventListener('galaxy-ready', hideLoading, { once: true });
+            window.addEventListener('load', function () {
+                setTimeout(hideLoading, 1200);
+            }, { once: true });
+        }());
     </script>
 </body>
 
